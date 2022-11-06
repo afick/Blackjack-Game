@@ -77,11 +77,12 @@ Structs:
 Functions: 
 
 1. *newDeck*, creates a new deck, returns a pointer to that deck
-2. *pullCard*, removes a card from the deck, returns a pointer to the card
-3. *addToHand*, which adds a card to a hand of cards.
-4. *deleteDeck*, which deletes a deck and all of the cards in the deck
-5. *deleteHand*, which deletes a hand and all of the cards in the hand
-6. *getHandScore*, which returns the score of the cards in the hand.
+2. *newHand*, creates a new hand, returns a pointer to that hand
+3. *pullCard*, removes a card from the deck, returns a pointer to the card
+4. *addToHand*, which adds a card to a hand of cards.
+5. *deleteDeck*, which deletes a deck and all of the cards in the deck
+6. *deleteHand*, which deletes a hand and all of the cards in the hand
+7. *getHandScore*, which returns the score of the cards in the hand.
 
 ## Pseudo code for logic/algorithmic flow
 
