@@ -35,8 +35,11 @@ int player_connect(const char* server_addr, const int PORT);
  * 
  * Caller provides:
  *      a valid PORT number.
+ * We return:
+ *      a valid communication socket that connects to the player (> 0),
+ *      -1 if socket creation failed, setsockopt failed, bind failed, or listen failed.
 */
-int dealer_init();
+int dealer_init(const int PORT);
 
 
 #endif // __NETWORK_H
