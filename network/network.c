@@ -95,3 +95,43 @@ int dealer_init(const int PORT) {
     return new_socket;
 }
 
+/**************** read_message() ****************/
+/* See network.h for more information */
+char* read_message(const int socket) {
+    char* buffer = calloc(30, sizeof(char));
+
+    if (buffer == NULL) {
+        perror("calloc failed");
+        return NULL;
+    }
+
+    if (read(socket, buffer, 29) < 0) {
+        perror("reading message failed");
+        return NULL;
+    }
+
+    return buffer;
+}
+
+/**************** write_message() ****************/
+/* See network.h for more information */
+bool write_message(const int socket, char* message) {
+    char* buffer = calloc(30, sizeof(char));
+
+    if (buffer == NULL) {
+        perror("calloc failed");
+        return false;
+    }
+
+    strcpy(buffer, message);
+
+    if (write(socket, buffer, strlen(buffer)) < 0) {
+        perror("writing message failed");
+        free(buffer);
+        return false;
+    }
+
+    free(buffer);
+
+    return true;
+}
