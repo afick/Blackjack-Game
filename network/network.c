@@ -23,7 +23,7 @@
 
 /**************** player_connect() ****************/
 /* See network.h for more information */
-int player_connect(const char* dealer_addr, const int PORT) {
+int connectToDealer(const char* dealer_addr, const int PORT) {
     int sock = 0, player_fd;
     struct sockaddr_in serv_addr; // address of the server
     
@@ -49,9 +49,9 @@ int player_connect(const char* dealer_addr, const int PORT) {
     return sock;
 }
 
-/**************** dealer_init() ****************/
+/**************** setUpDealerSocket() ****************/
 /* See network.h for more information */
-int dealer_init(const int PORT) {
+int setUpDealerSocket(const int PORT) {
     int dealer_fd, new_socket, valread;
     struct sockaddr_in serv_addr;
     int opt = 1;
@@ -95,9 +95,9 @@ int dealer_init(const int PORT) {
     return new_socket;
 }
 
-/**************** read_message() ****************/
+/**************** readMessage() ****************/
 /* See network.h for more information */
-char* read_message(const int socket) {
+char* readMessage(const int socket) {
     char* buffer = calloc(30, sizeof(char));
 
     if (buffer == NULL) {
@@ -113,9 +113,9 @@ char* read_message(const int socket) {
     return buffer;
 }
 
-/**************** write_message() ****************/
+/**************** sendMessage() ****************/
 /* See network.h for more information */
-bool write_message(const int socket, char* message) {
+bool sendMessage(const int socket, char* message) {
     char* buffer = calloc(30, sizeof(char));
 
     if (buffer == NULL) {

@@ -15,10 +15,13 @@
 #define __NETWORK_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 /**************** functions ****************/
 
-/**************** player_connect() ****************/
+/**************** connectToDealer() ****************/
 /** Connect player to dealer.
  * 
  * Caller provides:
@@ -28,9 +31,9 @@
  *      a valid communication socket (> 0),
  *      -1 if socket creation error, invalid address, address not supported, or connection failed.
 */
-int player_connect(const char* server_addr, const int PORT);
+int connectToDealer(const char* server_addr, const int PORT);
 
-/**************** dealer_init() ****************/
+/**************** setUpDealerSocket() ****************/
 /** Set up a dealer socket listening for players to connect.
  * 
  * Caller provides:
@@ -39,9 +42,9 @@ int player_connect(const char* server_addr, const int PORT);
  *      a valid communication socket that connects to the player (> 0),
  *      -1 if socket creation failed, setsockopt failed, bind failed, or listen failed.
 */
-int dealer_init(const int PORT);
+int setUpDealerSocket(const int PORT);
 
-/**************** read_message() ****************/
+/**************** readMessage() ****************/
 /** Player/dealer reads a message from dealer/player.
  * 
  * Caller provides:
@@ -52,9 +55,9 @@ int dealer_init(const int PORT);
  * Caller is responsible for:
  *      later free the memory allocated for the string.
 */
-char* read_message(const int socket);
+char* readMessage(const int socket);
 
-/**************** player_send() ****************/
+/**************** sendMessage() ****************/
 /** Player/dealer sends a message to dealer/player.
  * 
  * Caller provides:
@@ -64,6 +67,6 @@ char* read_message(const int socket);
  *      false if calloc failed or writing message failed,
  *      trun if message is written to the socket.
 */
-void write_message(const int socket, char* message);
+bool sendMessage(const int socket, char* message);
 
 #endif // __NETWORK_H
