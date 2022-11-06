@@ -30,11 +30,13 @@
 */
 int player_connect(const char* server_addr, const int PORT);
 
-// /**************** dealer_connect() ****************/
-// /**
-//  * 
-// */
-// dealer_connect();
+/**************** dealer_init() ****************/
+/** Set up a server socket listening for players to connect
+ * 
+ * Caller provides:
+ *      a valid PORT number.
+*/
+int dealer_init();
 
 
 #endif // __NETWORK_H
