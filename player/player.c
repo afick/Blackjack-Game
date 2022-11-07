@@ -9,14 +9,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "network.h"
 #include "mem.h"
+#include "card.h"
 
 /***** Global Variables ****/
 
 // This defines the dimensions of 
-int max_player_points = 20;
-int max_dealer_points = 11;
-int number_actions = 2;
+const int max_player_points = 20;
+const int max_dealer_points = 11;
+const int number_actions = 2;
 
 float Q[max_player_points][max_dealer_points][number_actions] = {0};
 int Q_count[max_player_points][max_dealer_points][number_actions] = {0};
@@ -92,6 +94,18 @@ void updateQTables(int player_points, int dealer_points, int action, int reward)
 	Q[player_points][dealer_points][action] += (1/(float)Q_count[player_points][dealer_points][action]) * (reward - Q[player_points][dealer_points][action]);
 }
 
+// play method begins playing a game
+void play(char* player_name, char* ip_address, int port) {
+	// Begin networking set up	
+	int socket = connectToDealer(ip_address, port);
+	if (socket <= 0) {
+		fprintf(stderr, "%s\n", "Unable to connect to specified ip address and port");
+		exit(99);
+	}	
+
+	
+}
+
 int main(int argc, char* argv[]) {
 	
 	//Ensure argument integrity
@@ -100,10 +114,15 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	if (atoi(argv[3]) <= 0) {
+		fprintf(stder, "%s\n", "PORT passed is invalid");
+		return 1;
+	}
+
 	//Extracting variables
-	char* player_name = argv[2];
-	char* ip_address = argv[3];
-	char* port = argv[4];
+	char* player_name = argv[1];
+	char* ip_address = argv[2];
+	int port = atoi(argv[3]);
 
 	loadQTables();
 
