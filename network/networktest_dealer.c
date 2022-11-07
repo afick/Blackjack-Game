@@ -49,12 +49,19 @@ int main(const int argc, char *argv[]) {
     } else {
         printf("didn't receive JOIN di, received %s\n", buffer);
     }
+    free(buffer);
+    buffer = NULL;
 
     if (sendMessage(connected_socket, "BEGIN") == -1) {
         printf("sending BEGIN failed\n");
+    } else {
+        printf("sent BEGIN\n");
     }
+
     if (sendMessage(connected_socket, "CARD Seven of Diamonds") == -1) {
         printf("sending CARD Seven of Diamonds failed\n");
+    } else {
+        printf("sent CARD Seven of Diamonds\n");
     }
 
     buffer = readMessage(connected_socket);
@@ -63,6 +70,7 @@ int main(const int argc, char *argv[]) {
     } else {
         printf("didn't receive STAND, received %s\n", buffer);
     }
+    free(buffer);
 
     closeServerSocket(connected_socket, listening_socket);
 

@@ -19,6 +19,9 @@ CFLAGS = -Wall -pedantic -std=c11 -ggdb $(FLAGS)
 CC = gcc
 MAKE = make
 
+# for memory-leak tests
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
+
 .PHONY: test valgrind clean
 
 ########### network ##################
@@ -30,11 +33,26 @@ $(LIB): $(OBJS)
 network.o: network.h
 
 # test network module with networktest_dealer and networktest_player
-test: $(LIB)
+# run 'make test_dealer' first, then run 'make test_player'
+test_dealer: $(LIB)
 	$(CC) $(CFLAGS) networktest_dealer.c $(LIB) -o dealer
+	./dealer
+
+test_player: $(LIB)
 	$(CC) $(CFLAGS) networktest_player.c $(LIB) -o player
+	./player
+
+# test network module with networktest and valgrind
+# run 'make valgrind_dealer' first, then run 'make valgrind_player'
+valgrind_dealer: $(LIB)
+	$(CC) $(CFLAGS) networktest_dealer.c $(LIB) -o dealer
+	$(VALGRIND) ./dealer
+
+valgrind_player: $(LIB)
+	$(CC) $(CFLAGS) networktest_player.c $(LIB) -o player
+	$(VALGRIND) ./player
 
 # clean up after our compilation
 clean:
 	rm -f core
-	rm -f *.a *~ *.o *.out network
+	rm -f *.a *~ *.o *.out network dealer player
