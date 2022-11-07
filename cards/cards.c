@@ -21,6 +21,10 @@
 enum suits{Hearts = 1, Diamonds = 2, Clubs = 3, Spades = 4};
 enum nums{Ace = 1, Two = 2, Three = 3, Four = 4, Five = 5, Six = 6,      // number on card
              Seven = 7, Eight = 8, Nine = 9, Ten = 10, Jack = 11, Queen = 12, King = 13};
+static char const * suitsArr[] = { "Hearts", "Diamonds",
+                                "Clubs", "Spades" };
+static char const * numArr[] = {"Ace", "Two", "Three", "Four", 
+    "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
 
 /**************** local types ****************/
 
@@ -62,13 +66,13 @@ deck_t* newDeck(void)
             cardArr[i] = i+1;
         }
         // shuffle the array
-        srand(time(NULL));
+        srand(rand());
         for (int i = sizeDeck-1; i > 0; i--)
         {
             // Pick a random index from 0 to i
             int j = rand() % (i+1);
     
-            // Swap arr[i] with the element at random index
+            // Swap cardArr[i] with the element at random index
             swap(&cardArr[i], &cardArr[j]);
         }
         // Create the cards and insert by card ID
@@ -100,16 +104,16 @@ void swap (int *a, int *b)
 card_t* newCard(int id)
 {
     if (id > 0) {
-        card_t* card = mem_malloc(sizeof(card_t));
+        card_t* card = mem_malloc_assert(sizeof(card_t), "Creating card");
         if (card != NULL) {
-            int suit = (id-1)/13;
+            int suit = (id-1)/13+1;
             int num = (id-1)%13+1;
             card->suit = suit;
             card->number = num;
             if (num == 1) card->val = 11;
             else if (num > 10) card->val = 10;
             else card->val = num;
-            
+            return card;
         } else {
             return NULL;
         }
@@ -121,13 +125,8 @@ card_t* newCard(int id)
 /* see cards.h for description */
 card_t* newPlayerCard(char* cardString) {
     if (cardString != NULL) {
-        static char const * suitsArr[] = { "Hearts", "Diamonds",
-                                        "Clubs", "Spades" };
-        static char const * numArr[] = {"Ace", "Two", "Three", "Four", 
-        "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-        
-        char* number = mem_malloc(sizeof(char)*6); // size of largest number
-        char* suit = mem_malloc(sizeof(char)*9); // Size of largest suit
+        char* number = mem_malloc_assert(sizeof(char)*6, "Number string"); // size of largest number
+        char* suit = mem_malloc_assert(sizeof(char)*9, "Suit string"); // Size of largest suit
 
         sscanf(cardString, "CARD %s of %s", number, suit);
         
@@ -144,7 +143,9 @@ card_t* newPlayerCard(char* cardString) {
                 suitEnum = i + 1;
             }
         }
-        card_t* card = mem_malloc(sizeof(card_t));
+        mem_free(number);
+        mem_free(suit);
+        card_t* card = mem_malloc_assert(sizeof(card_t), "New card from player");
         if (card != NULL) {
             card->suit = suitEnum;
             card->number = numEnum;
@@ -155,7 +156,6 @@ card_t* newPlayerCard(char* cardString) {
         } else {
             return NULL;
         }
-
     }
     return NULL;
 }
@@ -164,7 +164,7 @@ card_t* newPlayerCard(char* cardString) {
 /* see cards.h for description */
 hand_t* newHand(void)
 {
-  hand_t* hand = mem_malloc(sizeof(hand_t));
+  hand_t* hand = mem_malloc_assert(sizeof(hand_t), "new hand");
 
   if (hand == NULL) {
     return NULL;              // error allocating hand
@@ -264,4 +264,20 @@ void cardDelete(void* item)
     if (card != NULL) {
         mem_free(card);  
     }
+}
+
+void cardTest(void) {
+    deck_t* deck = newDeck();
+    hand_t* hand = newHand();
+    card_t* card = pullCard(deck);
+    addToHand(hand, card);
+    while (card != NULL) {
+        printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
+        printf("Hand score: %d\n", getHandScore(hand));
+        card = pullCard(deck);
+        addToHand(hand, card);
+    }
+    printf("\n");
+    deleteDeck(deck);
+    deleteHand(hand);
 }

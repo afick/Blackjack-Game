@@ -3,7 +3,7 @@
 # Alex Fick, Final Project
 # CS 50, Fall 2022
 
-OBJS = cards.o ../utils/bag.o ../utils/mem.o 
+OBJS = cards.o ../utils/bag.o ../utils/mem.o cardtest.o
 LIBS =
 
 # comment the following to turn off verbose memory logging
@@ -18,9 +18,16 @@ VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
 cards: $(OBJS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
+cardtest: $(OBJS)
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+
+cardtest.o: cards.h 
 cards.o: ../utils/bag.h ../utils/mem.h cards.h
 ../utils/bag.o:  ../utils/bag.h
 ../utils/mem.o: ../utils/mem.h
+
+test: cardtest
+	valgrind ./cardtest
 
 .PHONY: test valgrind clean
 

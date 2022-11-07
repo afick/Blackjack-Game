@@ -127,4 +127,6 @@ void deleteDeck(deck_t* deck);
  */
 void deleteHand(hand_t* hand);
 
+void cardTest(void);
+
 #endif // __CARDS_H
