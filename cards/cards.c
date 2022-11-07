@@ -23,10 +23,6 @@ enum nums{ace, two, three, four, five, six,      // number on card
              seven, eight, nine, ten, jack, queen, king};
 
 /**************** local types ****************/
-struct aceFinder {
-    int acesFound;
-    int score;
-};
 
 /**************** global types ****************/
 typedef struct card {
@@ -158,8 +154,7 @@ void addToHand(hand_t* hand, card_t* card)
         bag_insert(bag, card);
         int newScore = hand->score + val;
         if (newScore > 21) {
-            struct aceFinder arg = {0, newScore};
-            bag_iterate(bag, &arg, findAces);
+            bag_iterate(bag, &newScore, findAces);
         }
         hand->score = newScore;
     }
@@ -172,12 +167,11 @@ void addToHand(hand_t* hand, card_t* card)
  */
 static void findAces(void* arg, void* item) {
     card_t* card = item;
-    struct aceFinder* find = arg;
+    int* score = arg;
     if (card != NULL) {
-        if (card->val == 11 && find->score > 21) {
+        if (card->val == 11 && *score > 21) {
             card->val = 1;
-            find->acesFound = 1;
-            find->score -= 10; 
+            *score -= 10; 
         }
     }
 }
