@@ -76,7 +76,7 @@ Structs:
    
 Functions: 
 
-1. *newCard*, creates a new card, returns a pointer to that card
+1. *newPlayerCard*, creates a new card from a player message, returns a pointer to that card
 2. *newDeck*, creates a new deck, returns a pointer to that deck
 3. *newHand*, creates a new hand, returns a pointer to that hand
 4. *pullCard*, removes a card from the deck, returns a pointer to the card

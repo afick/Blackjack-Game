@@ -18,9 +18,9 @@
 
 /**************** file-local global variables ****************/
 /* none */
-enum suits{hearts, diamonds, clubs, spades};
-enum nums{ace, two, three, four, five, six,      // number on card
-             seven, eight, nine, ten, jack, queen, king};
+enum suits{Hearts = 1, Diamonds = 2, Clubs = 3, Spades = 4};
+enum nums{Ace = 1, Two = 2, Three = 3, Four = 4, Five = 5, Six = 6,      // number on card
+             Seven = 7, Eight = 8, Nine = 9, Ten = 10, Jack = 11, Queen = 12, King = 13};
 
 /**************** local types ****************/
 
@@ -82,6 +82,10 @@ deck_t* newDeck(void)
     return deck;
 }
 
+/**************** swap() ****************/
+/* 
+ * Local function for swapping the value of two array ints
+ */
 void swap (int *a, int *b)
 {
     int temp = *a;
@@ -90,7 +94,9 @@ void swap (int *a, int *b)
 }
 
 /**************** newCard() ****************/
-/* see cards.h for description */
+/* 
+ * local function for creating a card that gets added to a deck
+ */
 card_t* newCard(int id)
 {
     if (id > 0) {
@@ -108,6 +114,49 @@ card_t* newCard(int id)
             return NULL;
         }
     } 
+    return NULL;
+}
+
+/**************** newPLayerCard() ****************/
+/* see cards.h for description */
+card_t* newPlayerCard(char* cardString) {
+    if (cardString != NULL) {
+        static char const * suitsArr[] = { "Hearts", "Diamonds",
+                                        "Clubs", "Spades" };
+        static char const * numArr[] = {"Ace", "Two", "Three", "Four", 
+        "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+        
+        char* number = mem_malloc(sizeof(char)*6); // size of largest number
+        char* suit = mem_malloc(sizeof(char)*9); // Size of largest suit
+
+        sscanf(cardString, "CARD %s of %s", number, suit);
+        
+        enum nums numEnum;
+        enum suits suitEnum;
+
+        for (int i = 0; i < King; i++) {
+            if (!strcmp(numArr[i], number)) {
+                numEnum = i + 1;
+            }
+        }
+        for (int i = 0; i < Spades + 1; i++) {
+            if (!strcmp(suitsArr[i], suit)) {
+                suitEnum = i + 1;
+            }
+        }
+        card_t* card = mem_malloc(sizeof(card_t));
+        if (card != NULL) {
+            card->suit = suitEnum;
+            card->number = numEnum;
+            if (card->number == 1) card->val = 11;
+            else if (card->number > 10) card->val = 10;
+            else card->val = card->number;
+            return card;
+        } else {
+            return NULL;
+        }
+
+    }
     return NULL;
 }
 
@@ -205,6 +254,10 @@ void deleteHand(hand_t* hand)
     mem_free(hand);
 }
 
+/**************** cardDelete() ****************/
+/* 
+ * local item function for deleting a card from a bag
+ */
 void cardDelete(void* item)
 {
     card_t* card = item;
