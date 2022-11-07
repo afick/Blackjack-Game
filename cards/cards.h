@@ -54,6 +54,17 @@ deck_t* newDeck(void);
  */
 hand_t* newHand(void);
 
+/**************** newPlayerCard ****************/
+/* Create a new card from a string passed by the player. 
+ *
+ * We return:
+ *   pointer to a new card, or NULL if error.
+ * Caller is responsible for:
+ *      adding the card to a hand.
+ *      later calling deleteHand.
+ */
+card_t* newPlayerCard(char* cardString);
+
 /**************** pullCard ****************/
 /* Extract a card from the deck, 
  * return pointer to the card
