@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <time.h>       // player
 #include <arpa/inet.h>  // player
 #include <sys/socket.h> 
@@ -51,8 +50,9 @@ int connectToDealer(const char* dealer_addr, const int PORT) {
 
 /**************** setUpDealerSocket() ****************/
 /* See network.h for more information */
-int setUpDealerSocket(const int PORT) {
-    int dealer_fd, new_socket, valread;
+int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_socket) {
+    int dealer_fd = 0;
+    int new_socket = 0;
     struct sockaddr_in serv_addr;
     int opt = 1;
     int addrlen = sizeof(serv_addr);
@@ -83,16 +83,16 @@ int setUpDealerSocket(const int PORT) {
         return -1;
     }
 
-    printf("Waiting for connection... ");
-    fflush(stdout); //ensure line above prints before waiting for connection
-
-    while (true) {
+    while (0) {
         if ((new_socket = accept(dealer_fd, (struct sockaddr*)&serv_addr, (socklen_t*)&addrlen)) != -1) {
             break;
         }
     }
+
+    *listening_socket = dealer_fd;
+    *connected_socket = new_socket;
     
-    return new_socket;
+    return 0;
 }
 
 /**************** readMessage() ****************/
@@ -115,12 +115,12 @@ char* readMessage(const int socket) {
 
 /**************** sendMessage() ****************/
 /* See network.h for more information */
-bool sendMessage(const int socket, char* message) {
+int sendMessage(const int socket, char* message) {
     char* buffer = calloc(30, sizeof(char));
 
     if (buffer == NULL) {
         perror("calloc failed");
-        return false;
+        return -1;
     }
 
     strcpy(buffer, message);
@@ -128,10 +128,21 @@ bool sendMessage(const int socket, char* message) {
     if (write(socket, buffer, strlen(buffer)) < 0) {
         perror("writing message failed");
         free(buffer);
-        return false;
+        return -1;
     }
 
     free(buffer);
 
-    return true;
+    return 0;
 }
+
+/**************** closeServerSocket() ****************/
+/* See network.h for more information */
+void closeServerSocket(const int connected_socket, const int listening_socket) {
+    close(connected_socket);
+    shutdown(listening_socket, SHUT_RDWR);
+}
+
+/**************** closeClientConnection() ****************/
+/* See network.h for more information */
+void closeClientConnection(const int socket);

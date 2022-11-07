@@ -6,7 +6,7 @@
 
 # object files, and the target library
 OBJS = network.o
-LIBS = 
+LIB = network.a
 
 # $^ refers to “the dependencies listed in this rule”
 # $@ refers to “the target of this rule”
@@ -15,7 +15,7 @@ LIBS =
 # (and run `make clean; make` whenever you change this)
 FLAGS = # -DAPPTEST # -DMEMTEST
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(FLAGS) -I$L
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(FLAGS)
 CC = gcc
 MAKE = make
 
@@ -23,8 +23,8 @@ MAKE = make
 
 ########### network ##################
 
-network: $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+$(LIB): $(OBJS)
+	ar cr $(LIB) $^
 
 # network source dependencies
 network.o: network.h
@@ -32,4 +32,4 @@ network.o: network.h
 # clean up after our compilation
 clean:
 	rm -f core
-	rm -f *.a *~ *.o *.out
+	rm -f *.a *~ *.o *.out network

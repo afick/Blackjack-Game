@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 /**************** functions ****************/
 
@@ -37,12 +36,13 @@ int connectToDealer(const char* server_addr, const int PORT);
 /** Set up a dealer socket listening for players to connect.
  * 
  * Caller provides:
- *      a valid PORT number.
+ *      a valid PORT number,
+ *      two int pointers to store listening socket and connected socket
  * We return:
- *      a valid communication socket that connects to the player (> 0),
+ *      0 if sockets are successfully created and dealer connects with player,
  *      -1 if socket creation failed, setsockopt failed, bind failed, or listen failed.
 */
-int setUpDealerSocket(const int PORT);
+int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_socket);
 
 /**************** readMessage() ****************/
 /** Player/dealer reads a message from dealer/player.
@@ -67,6 +67,22 @@ char* readMessage(const int socket);
  *      false if calloc failed or writing message failed,
  *      trun if message is written to the socket.
 */
-bool sendMessage(const int socket, char* message);
+int sendMessage(const int socket, char* message);
+
+/**************** closeServerSocket() ****************/
+/** Close the connected socket and the listening socket of the server (dealer)
+ * 
+ * Caller provides:
+ *      a valid socket 
+*/
+void closeServerSocket(const int connectedSocket, const int listeningSocket);
+
+/**************** closeClientConnection() ****************/
+/** Close the connection socket of the client (player)
+ * 
+ * Caller provides:
+ *      a valid socket.
+*/
+void closeClientConnection(const int socket);
 
 #endif // __NETWORK_H
