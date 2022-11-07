@@ -27,7 +27,7 @@ cards.o: ../utils/bag.h ../utils/mem.h cards.h
 ../utils/mem.o: ../utils/mem.h
 
 test: cardtest
-	valgrind ./cardtest
+	valgrind --leak-check=full ./cardtest
 
 .PHONY: test valgrind clean
 

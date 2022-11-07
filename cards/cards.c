@@ -66,7 +66,7 @@ deck_t* newDeck(void)
             cardArr[i] = i+1;
         }
         // shuffle the array
-        srand(rand());
+        srand(time(0));
         for (int i = sizeDeck-1; i > 0; i--)
         {
             // Pick a random index from 0 to i
@@ -125,11 +125,17 @@ card_t* newCard(int id)
 /* see cards.h for description */
 card_t* newPlayerCard(char* cardString) {
     if (cardString != NULL) {
+        char* message = mem_malloc_assert(sizeof(char)*7, "Mesage string"); // size of largest number
         char* number = mem_malloc_assert(sizeof(char)*6, "Number string"); // size of largest number
         char* suit = mem_malloc_assert(sizeof(char)*9, "Suit string"); // Size of largest suit
 
-        sscanf(cardString, "CARD %s of %s", number, suit);
-        
+        sscanf(cardString, "%s %s of %s", message, number, suit);
+        if (strcmp(message, "CARD") && strcmp(message, "DEALER")) {
+            mem_free(message);
+            return NULL;
+        }
+        mem_free(message);
+
         enum nums numEnum;
         enum suits suitEnum;
 
@@ -229,7 +235,7 @@ static void findAces(void* arg, void* item) {
 /* see cards.h for description */
 int getHandScore(hand_t* hand)
 {
-  if (hand != NULL ) {
+  if (hand != NULL) {
     return hand->score;
   } 
   return 0;
@@ -277,7 +283,26 @@ void cardTest(void) {
         card = pullCard(deck);
         addToHand(hand, card);
     }
-    printf("\n");
+    printf("\nNew Hand\n");
     deleteDeck(deck);
     deleteHand(hand);
+
+    hand = newHand();
+    card = newPlayerCard("CARD Seven of Spades");
+    addToHand(hand, card);
+    printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
+    printf("Hand score: %d\n", getHandScore(hand));
+
+    card = newPlayerCard("DEALER Ace of Hearts");
+    addToHand(hand, card);
+    printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
+    printf("Hand score: %d\n", getHandScore(hand));
+
+    card = newPlayerCard("CARD Jack of Clubs");
+    addToHand(hand, card);
+    printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
+    printf("Hand score: %d\n", getHandScore(hand));
+
+    deleteHand(hand);
+    printf("\n");
 }
