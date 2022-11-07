@@ -98,13 +98,161 @@ void updateQTables(int player_points, int dealer_points, int action, int reward)
 void play(char* player_name, char* ip_address, int port) {
 	// Begin networking set up	
 	int socket = connectToDealer(ip_address, port);
-	if (socket <= 0) {
-		fprintf(stderr, "%s\n", "Unable to connect to specified ip address and port");
+	if (socket <= 0) exit(99); 
+
+	// Joinning game
+	char joinmessage[30];
+	sprintf(joinmessage, "JOIN %s", player_name);
+
+	if (sendMessage(socket, joinmessage) == -1) exit(99);	
+
+	// Recieve Begin message
+	char* beginMessage = readMessage(socket);
+	if (beginMessage == NULL) {
+		sleep(2);
+		if ((beginMessage = readMessage(socket)) == NULL) exit(99);
+	}
+
+	if (strcmp(beginMessage, "BEGIN")) {
+		fprintf(stderr, "%s\n", "Unexpected Begin message");
 		exit(99);
+	}
+
+	mem_free(beginMessage);
+
+	// Setting up hands
+	hand_t* phand = mem_assert(newHand(), "Unable to create hand in play function");
+	hand_t* dhand = mem_assert(newHand(), "Unable to create hand in play function");
+
+	// Getting player hand
+	char* cardm = readMessage(socket);
+	if (cardm == NULL) {
+		sleep(2);
+		if ((cardm = readMessage(socket)) == NULL) exit(99);
 	}	
 
+	card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+	addToHand(phand, card);
+	mem_free(cardm);
+
+	cardm = readMessage(socket);
+	if (cardm == NULL) {
+		sleep(2);
+		if ((cardm = readMessage(socket)) == NULL) exit(99);
+	}
+
+	card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+	addToHand(phand, card);
+	mem_free(cardm);
+
+	// Getting dealer hand
+	cardm = readMessage(socket);
+	if (cardm == NULL) {
+		sleep(2);
+		if ((cardm = readMessage(socket)) == NULL) exit(99);
+	}
+
+	card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+	addToHand(dhand, card);
+	mem_free(cardm);
+
+	// Begin playing game
+	char* decm = readMessage(socket);
+	if (decm == NULL) {
+		sleep(2);
+		if ((decm = readMessage(socket)) == NULL) exit(99);
+	}
+
+	if (strcmp(decm, "DECISION")) {
+		fprintf(stderr, "%s\n", "Unexpected decision message");
+		exit(99);
+	} 
+
+	mem_free(decm);
+
+	char dec[6];
+
+	do {
+		// Deciding next move
+		int ppoints = getHandScore(phand);
+		int dpoints = getHandScore(dhand);
+
+		float hit_chance = Q[ppoints][dpoints][0];
+		float stand_chance = Q[ppoints][dpoints][1];
+
+		if (hit_chance > stand_chance) {
+			dec = "HIT";
+		} else {
+			dec = "STAND";
+		}
+
+		if (sendMessage(socket, dec) == -1) {
+			sleep(2);
+			if (sendMessage(socket, dec) == -1) {
+				fprintf(stderr, "%s\n", "Sending message to dealer with move was not possible");
+				exit(99);
+			}
+		}
+
+		if (dec == "STAND") break;
+
+		// Get card
+		cardm = readMessage(socket);
+		if (cardm == NULL) {
+			sleep(2);
+			if ((cardm = readMessage(socket)) == NULL) exit(99);
+		}
+
+		card = mem_assert(newPlayerCard(cardm), "New card was not craeted in play function");
+		addToHand(phand, card);
+		mem_free(cardm);
+		
+		// Verify Decision Message
+		decm = readMessage(socket);
+		if (decm == NULL) {
+			sleep(2);
+			if ((decm = readMessage(socket)) == NULL) exit(99);
+		}
+
+		if (strcmp(decm, "DECISION")) {
+			fprintf(stderr, "%s\n", "Unexpected decision message");
+			exit(99);
+		}
+		mem_free(decm);
+	} while (1);
 	
-}
+	// Getting match result
+	char* result = readMessage(socket);
+	if (result == NULL) {
+		sleep(10);
+		if ((result = readMessage(socket)) == NULL) exit(99);
+	}
+
+	printf("Match Result: %s\n", result);
+
+	mem_free(result);
+
+	// Quitting
+	char* quit = readMessage(socket);
+	if (quit == NULL) {
+		sleep(2);
+		if ((quit = readMessage(socket)) == NULL) exit(99);
+	}
+
+	if (strcmp(quit, "QUIT")) {
+		fprintf(stderr, "%s\n", "Unknown Quit command recieved");
+		exit(99);
+	}
+
+	mem_free(quit);
+
+	// Beaking connection
+	closeClientConnection(socket);
+
+	// Freeing memory
+	deleteHand(phand);
+	deleteHand(dhand);
+}	
 
 int main(int argc, char* argv[]) {
 	
