@@ -47,6 +47,7 @@ deck_t* newDeck(void);
  *   pointer to a new hand, or NULL if error.
  * We guarantee:
  *   The hand begins empty.
+ *   The score is initialized to 0 and card bag is empty
  * Caller is responsible for:
  *   later calling deleteHand.
  */
