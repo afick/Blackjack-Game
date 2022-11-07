@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bag.h"
-#include "mem.h"
+#include "../utils/bag.h"
+#include "../utils/mem.h"
 #include "cards.h"
 #include <time.h>
 
@@ -50,12 +50,12 @@ typedef bag_t deck_t;
 /* not visible outside this file */
 static card_t* newCard(int id);
 static void findAces(void* arg, void* item);
-
+void cardDelete(void* item);
+void swap (int *a, int *b); 
 
 /**************** newDeck() ****************/
 /* see cards.h for description */
-deck_t*
-newDeck(void)
+deck_t* newDeck(void)
 {
     deck_t* deck = bag_new();
     int sizeDeck = 52;
@@ -95,8 +95,7 @@ void swap (int *a, int *b)
 
 /**************** newCard() ****************/
 /* see cards.h for description */
-card_t*
-newCard(int id)
+card_t* newCard(int id)
 {
     if (id > 0) {
         card_t* card = mem_malloc(sizeof(card_t));
@@ -112,13 +111,13 @@ newCard(int id)
         } else {
             return NULL;
         }
-    }
+    } 
+    return NULL;
 }
 
 /**************** newHand() ****************/
 /* see cards.h for description */
-hand_t*
-newHand(void)
+hand_t* newHand(void)
 {
   hand_t* hand = mem_malloc(sizeof(hand_t));
 
@@ -137,8 +136,7 @@ newHand(void)
 
 /**************** pullCard() ****************/
 /* see cards.h for description */
-card_t*
-pullCard(deck_t* deck)
+card_t* pullCard(deck_t* deck)
 {
   if (deck == NULL) {
     return NULL;              // error allocating bag
@@ -151,8 +149,7 @@ pullCard(deck_t* deck)
 
 /**************** addToHand() ****************/
 /* see cards.h for description */
-void
-addToHand(hand_t* hand, card_t* card)
+void addToHand(hand_t* hand, card_t* card)
 {
   if (hand != NULL && card != NULL) {
     bag_t* bag = hand->cards;
@@ -178,7 +175,7 @@ static void findAces(void* arg, void* item) {
     struct aceFinder* find = arg;
     if (card != NULL) {
         if (card->val == 11 && find->score > 21) {
-            card->val == 1;
+            card->val = 1;
             find->acesFound = 1;
             find->score -= 10; 
         }
@@ -187,18 +184,17 @@ static void findAces(void* arg, void* item) {
 
 /**************** getHandScore() ****************/
 /* see cards.h for description */
-int
-getHandScore(hand_t* hand)
+int getHandScore(hand_t* hand)
 {
   if (hand != NULL ) {
     return hand->score;
-  }
+  } 
+  return 0;
 }
 
 /**************** deleteDeck() ****************/
 /* see cards.h for description */
-void 
-deleteDeck(deck_t* deck)
+void deleteDeck(deck_t* deck)
 {
     if (deck != NULL) {
         bag_delete(deck, cardDelete);
@@ -207,14 +203,14 @@ deleteDeck(deck_t* deck)
 
 /**************** deleteDeck() ****************/
 /* see cards.h for description */
-void 
-deleteHand(hand_t* hand)
+void deleteHand(hand_t* hand)
 {
     if (hand != NULL) {
         bag_delete(hand->cards, cardDelete);
     }
     mem_free(hand);
 }
+
 void cardDelete(void* item)
 {
     card_t* card = item;

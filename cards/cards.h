@@ -19,12 +19,13 @@
 #define __CARDS_H
 
 #include <stdio.h>
+#include "../utils/bag.h"
 
 
 /**************** global types ****************/
 typedef struct card card_t;  // opaque to users of the module
 typedef struct hand hand_t;  // opaque to users of the module
-typedef struct deck deck_t;  // opaque to users of the module
+typedef bag_t deck_t;  // opaque to users of the module
 
 /**************** functions ****************/
 
