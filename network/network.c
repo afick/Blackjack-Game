@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <time.h>       // player
 #include <arpa/inet.h>  // player
 #include <sys/socket.h> 
@@ -20,7 +21,7 @@
 
 /**************** functions ****************/
 
-/**************** player_connect() ****************/
+/**************** connectToDealer() ****************/
 /* See network.h for more information */
 int connectToDealer(const char* dealer_addr, const int PORT) {
     int sock = 0, player_fd;
@@ -41,7 +42,7 @@ int connectToDealer(const char* dealer_addr, const int PORT) {
     }
 
     if ((player_fd = connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) {
-        fprintf(stderr, "Connection Failed\n");
+        fprintf(stderr, "Connection failed\n");
         return -1;
     }
 
@@ -83,7 +84,7 @@ int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_sock
         return -1;
     }
 
-    while (0) {
+    while (true) {
         if ((new_socket = accept(dealer_fd, (struct sockaddr*)&serv_addr, (socklen_t*)&addrlen)) != -1) {
             break;
         }
@@ -145,4 +146,6 @@ void closeServerSocket(const int connected_socket, const int listening_socket) {
 
 /**************** closeClientConnection() ****************/
 /* See network.h for more information */
-void closeClientConnection(const int socket);
+void closeClientConnection(const int socket) {
+    close(socket);
+}

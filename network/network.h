@@ -15,8 +15,6 @@
 #define __NETWORK_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**************** functions ****************/
 
@@ -64,8 +62,8 @@ char* readMessage(const int socket);
  *      a valid socket,
  *      a valid string of message to dealer/player.
  * We return:
- *      false if calloc failed or writing message failed,
- *      trun if message is written to the socket.
+ *      -1 if calloc failed or writing message failed,
+ *      0 if message is written to the socket.
 */
 int sendMessage(const int socket, char* message);
 

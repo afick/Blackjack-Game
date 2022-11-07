@@ -29,6 +29,11 @@ $(LIB): $(OBJS)
 # network source dependencies
 network.o: network.h
 
+# test network module with networktest_dealer and networktest_player
+test: $(LIB)
+	$(CC) $(CFLAGS) networktest_dealer.c $(LIB) -o dealer
+	$(CC) $(CFLAGS) networktest_player.c $(LIB) -o player
+
 # clean up after our compilation
 clean:
 	rm -f core
