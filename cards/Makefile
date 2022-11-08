@@ -7,8 +7,9 @@ OBJS = cards.o ../utils/bag.o ../utils/mem.o cardtest.o
 LIBS =
 
 # comment the following to turn off verbose memory logging
-# TESTING=-DTESTING
+TESTING=-DTESTING
 
+CCFLAGS = -Wall -pedantic -std=c11 -ggdb  -I../lib
 CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I../lib
 CC = gcc
 MAKE = make
@@ -16,7 +17,7 @@ MAKE = make
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
 
 cards: $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(CCFLAGS) $^ $(LIBS) -o $@
 
 cardtest: $(OBJS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@

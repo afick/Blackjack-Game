@@ -36,6 +36,7 @@ void addToHand(hand_t* hand, card_t* card);
 int getHandScore(hand_t* hand);
 void deleteDeck(deck_t* deck);
 void deleteHand(hand_t* hand);
+void cardTest(void);
 ```
 
 ### Implementation
