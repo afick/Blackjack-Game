@@ -89,13 +89,25 @@ void saveQTables() {
 	fclose(qcountfile);
 }
 
-// 
+#ifdef TRAIN
+// rewardSaver saves the reward to the bag
+void rewardSaver(void* arg, void* item) {
+	int reward = *arg;
+	int* round = item;
+	round[3] = reward;
+} 
 
-// updateQTables updates the table with a new value based on a game
-void updateQTables(int player_points, int dealer_points, int action, int reward) {
+// roundbagSaver saves the round matrix to the table
+void roundbagSaver(void* arg, void* item) {
+	int* round = item;
+	int player_points = round[0];
+	int dealer_points = round[1];
+	int action = round[2];
+	int reward = round[3];
 	Q_count[player_points][dealer_points][action] += 1;
 	Q[player_points][dealer_points][action] += (1/(float)Q_count[player_points][dealer_points][action]) * (reward - Q[player_points][dealer_points][action]);
 }
+#endif
 
 // play method begins playing a game
 void play(char* player_name, char* ip_address, int port) {
@@ -251,6 +263,23 @@ void play(char* player_name, char* ip_address, int port) {
 	
 		printf("Match Result: %s\n", result);
 	
+#ifdef TRAIN
+		// Saving reward integer
+		int reward;
+		if (!strcmp(result, "WIN")) {
+			reward = 1;
+		} else if (!strcmp(result, "LOOSE")) {
+			reward = -1;
+		} else if (!strcmp(result, "BUST")) {
+			reward = -1;
+		} else if (!strcmp(result, "PUSSH")) {
+			reward = 0;
+		} else {
+			fprintf(stderr, "%s\n", "Unexpected reward obtained in play function");
+			exit(99);
+		}
+
+#endif
 		mem_free(result);
 	
 		// Freeing memory
@@ -265,9 +294,10 @@ void play(char* player_name, char* ip_address, int port) {
 
 #ifdef TRAIN
 		// Record Reward
+		bag_iterate(roundbag, &reward, rewardSaver);
 
-
-		// Record match 
+		// Record match
+		bag_iterate(roundbag, NULL, roundbagSaver);
 
 		// Freeing round bag
 		bag_delete(roundbag, mem_free);
@@ -305,10 +335,7 @@ int main(int argc, char* argv[]) {
 
 	loadQTables();
 
-#ifdef TRAIN
-	train(player_name, ip_address, port);
-#else
 	play(player_name, ip_address, port);
-#endif
+
 	saveQTables();
 }
