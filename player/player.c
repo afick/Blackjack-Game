@@ -196,6 +196,15 @@ void play(char* player_name, char* ip_address, int port) {
 	
 		do {
 			// Deciding next move
+#ifdef TRAIN
+			if ((rand() % 2)) {
+				dec = "HIT";
+				decnum = 0;
+			} else {
+				dec = "STAND";
+				decnum = 1;
+			}
+#else
 			int ppoints = getHandScore(phand);
 			int dpoints = getHandScore(dhand);
 	
@@ -209,7 +218,7 @@ void play(char* player_name, char* ip_address, int port) {
 				dec = "STAND";
 				decnum = 1;
 			}
-	
+#endif
 			if (sendMessage(socket, dec) == -1) {
 				sleep(2);
 				if (sendMessage(socket, dec) == -1) {
@@ -272,7 +281,7 @@ void play(char* player_name, char* ip_address, int port) {
 			reward = -1;
 		} else if (!strcmp(result, "BUST")) {
 			reward = -1;
-		} else if (!strcmp(result, "PUSSH")) {
+		} else if (!strcmp(result, "PUSH")) {
 			reward = 0;
 		} else {
 			fprintf(stderr, "%s\n", "Unexpected reward obtained in play function");
