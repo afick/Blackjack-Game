@@ -1,0 +1,6 @@
+player is connected with dealer
+ connected socket:3
+player: sent JOIN di
+player: received BEGIN from dealer
+player: received CARD Seven of Diamonds from dealer
+player: sent STAND

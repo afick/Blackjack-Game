@@ -45,7 +45,7 @@ int main(const int argc, char *argv[]) {
 
     buffer = readMessage(connected_socket);
     if (strncmp(buffer,"JOIN di", strlen("JOIN di")) == 0) {
-        printf("received JOIN di from player\n");  
+        printf("dealer: received JOIN di from player\n");  
     } else {
         printf("didn't receive JOIN di, received %s\n", buffer);
     }
@@ -55,18 +55,18 @@ int main(const int argc, char *argv[]) {
     if (sendMessage(connected_socket, "BEGIN") == -1) {
         printf("sending BEGIN failed\n");
     } else {
-        printf("sent BEGIN\n");
+        printf("dealer: sent BEGIN\n");
     }
 
     if (sendMessage(connected_socket, "CARD Seven of Diamonds") == -1) {
         printf("sending CARD Seven of Diamonds failed\n");
     } else {
-        printf("sent CARD Seven of Diamonds\n");
+        printf("dealer: sent CARD Seven of Diamonds\n");
     }
 
     buffer = readMessage(connected_socket);
     if (strncmp(buffer,"STAND", strlen("STAND")) == 0) {
-        printf("received STAND from player\n");  
+        printf("dealer: received STAND from player\n");  
     } else {
         printf("didn't receive STAND, received %s\n", buffer);
     }

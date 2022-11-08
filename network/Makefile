@@ -36,11 +36,11 @@ network.o: network.h
 # run 'make test_dealer' first, then run 'make test_player'
 test_dealer: $(LIB)
 	$(CC) $(CFLAGS) networktest_dealer.c $(LIB) -o dealer
-	./dealer
+	./dealer > testing_dealer.out
 
 test_player: $(LIB)
 	$(CC) $(CFLAGS) networktest_player.c $(LIB) -o player
-	./player
+	./player > testing_player.out
 
 # test network module with networktest and valgrind
 # run 'make valgrind_dealer' first, then run 'make valgrind_player'

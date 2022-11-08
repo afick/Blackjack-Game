@@ -35,7 +35,7 @@ int connectToDealer(const char* dealer_addr, const int PORT) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
 
-    // Conver IPv4 and IPv6 addresses from test to binary form
+    // Convert IPv4 and IPv6 addresses from test to binary form
     if (inet_pton(AF_INET, dealer_addr, &serv_addr.sin_addr) <= 0) {
         fprintf(stderr, "Invalid address/ Address not supported\n");
         return -1;

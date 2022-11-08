@@ -51,7 +51,7 @@ int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_sock
  *      a string of message from dealer/player,
  *      NULL if calloc failed or reading message failed.
  * Caller is responsible for:
- *      later free the memory allocated for the string.
+ *      later freeing the memory allocated for the string.
 */
 char* readMessage(const int socket);
 
@@ -71,7 +71,8 @@ int sendMessage(const int socket, char* message);
 /** Close the connected socket and the listening socket of the server (dealer)
  * 
  * Caller provides:
- *      a valid socket 
+ *      a valid connected socket,
+ *      a valid listening socket.
 */
 void closeServerSocket(const int connectedSocket, const int listeningSocket);
 
