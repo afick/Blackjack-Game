@@ -60,12 +60,10 @@ In network module, we expect:
 
 1. *setUpDealerSocket*, which opens a socket of a dealer for a player to connect to.
 2. *connectToDealer*, which connects a player to the dealer socket at a specific Port and IP
-3. *clientSendMessage*, which sends a message from client to server
-4. *clientReadMessage*, which allows a client to read a message from the server
-5. *serverSendMessage*, which sends a message from server to client
-6. *serverReadMessage*, which allows a server to read a message from the client
-7. *closeServerSocket*, which ends the connection and closes the server socket
-8. *closeClientConnection*, which disconnects the client from the server.
+3. *sendMessage*, which sends a message to a socket
+4. *readMessage*, which reads a message from a socket
+5. *closeServerSocket*, which ends the connection and closes the server socket
+6. *closeClientConnection*, which disconnects the client from the server.
 
 In card module, which we leverage the ADT with, we expect: 
 
