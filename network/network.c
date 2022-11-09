@@ -19,7 +19,20 @@
 #include <unistd.h>     // read, write, close
 #include <netinet/in.h> // dealer
 
-/**************** functions ****************/
+/**************** local functions ****************/
+
+/**************** delay() ****************/
+/* See network.h for more information */
+void delay(int milli_seconds) {
+    // Storing start time
+    clock_t start_time = clock();
+ 
+    // looping till required time is not achieved
+    while (clock() < start_time + milli_seconds)
+        ;
+}
+
+/**************** global functions ****************/
 
 /**************** connectToDealer() ****************/
 /* See network.h for more information */
@@ -131,6 +144,8 @@ int sendMessage(const int socket, char* message) {
         free(buffer);
         return -1;
     }
+
+    delay(25);
 
     free(buffer);
 
