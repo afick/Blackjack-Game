@@ -202,10 +202,10 @@ void play(char* player_name, char* ip_address, int port) {
 			// Deciding next move
 #ifdef TRAIN
 			if ((rand() % 2)) {
-				dec = "HIT";
+				strcpy(dec, "HIT");
 				decnum = 0;
 			} else {
-				dec = "STAND";
+				strcpy(dec, "STAND");
 				decnum = 1;
 			}
 #else
@@ -216,10 +216,10 @@ void play(char* player_name, char* ip_address, int port) {
 			float stand_chance = Q[ppoints][dpoints][1];
 	
 			if (hit_chance > stand_chance) {
-				dec = "HIT";
+				strcpy(dec, "HIT");
 				decnum = 0;
 			} else {
-				dec = "STAND";
+				strcpy(dec, "STAND");
 				decnum = 1;
 			}
 #endif
