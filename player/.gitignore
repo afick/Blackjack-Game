@@ -36,5 +36,4 @@ Icon?
 
 ###########################################################################
 # custom additions below here; see also .gitignore files in subdirectories.
-cardtest
-cards
+player
