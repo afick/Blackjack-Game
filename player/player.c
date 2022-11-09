@@ -261,7 +261,6 @@ void play(char* player_name, char* ip_address, int port) {
 			}
 	
 			if (!strcmp(decm, "RESULT BUST")) {
-				mem_free(dec);
 				break;
 			} 
 
@@ -270,7 +269,6 @@ void play(char* player_name, char* ip_address, int port) {
 				exit(99);
 			}
 			mem_free(decm);
-			mem_free(dec);
 		} while (1);
 		
 		// Getting match result
