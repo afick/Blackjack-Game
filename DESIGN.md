@@ -138,7 +138,7 @@ The dealer will run as follows:
             Pull a card from the deck    
             Add the card to a hand for the dealer
         Use findResult to determine the outcome of the game
-        Send “RESULT WIN|LOOSE|PUSH”  to the player
+        Send “RESULT WIN|LOOSE|PUSH|BUST”  to the player
     Send “QUIT” to the player
 
 
