@@ -3,14 +3,16 @@
 # Alex Fick, Final Project
 # CS 50, Fall 2022
 
-OBJS = cards.o ../utils/bag.o ../utils/mem.o cardtest.o
-LIBS =
+U = ../utils
+
+OBJS = cards.o cardtest.o
+LIBS = $U/utils.a
 
 # comment the following to turn off verbose memory logging
 TESTING=-DTESTING
 
-CCFLAGS = -Wall -pedantic -std=c11 -ggdb  -I../lib
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I../lib
+CCFLAGS = -Wall -pedantic -std=c11 -ggdb 
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) 
 CC = gcc
 MAKE = make
 # for memory-leak tests

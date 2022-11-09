@@ -9,17 +9,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "network.h"
-#include "mem.h"
-#include "card.h"
-#include "bag.h"
+#include <string.h>
+#include "../network/network.h"
+#include <mem.h>
+#include <file.h>
+#include "../cards/cards.h"
+#include <bag.h>
 
 /***** Global Variables ****/
 
 // This defines the dimensions of 
-const int max_player_points = 20;
-const int max_dealer_points = 11;
-const int number_actions = 2;
+#define max_player_points 20
+#define max_dealer_points 11
+#define number_actions 2
 
 float Q[max_player_points][max_dealer_points][number_actions] = {0};
 int Q_count[max_player_points][max_dealer_points][number_actions] = {0};
@@ -30,6 +32,7 @@ void loadQTables() {
 	FILE* qcountfile = fopen("data/qtablecount", "r");
 
 #ifdef TRAIN
+	printf("test of flag");
 	// If this is the first iteration, there might not be a table
 	if (!qfile) {
 		if (qcountfile) fclose(qcountfile);
@@ -53,12 +56,12 @@ void loadQTables() {
 			for (int k = 0; k < number_actions; k++) {
 				if ((currline = file_readLine(qfile))) {
 					Q[i][j][k] = atoi(currline);
-					free(currline);
+					mem_free(currline);
 				}
 
 				if ((currline = file_readLine(qcountfile))) {
 					Q_count[i][j][k] = atoi(currline);
-					free(qcountfile);
+					mem_free(currline);
 				}
 			}
 		}
@@ -79,8 +82,8 @@ void saveQTables() {
 	for (int i = 0; i < max_player_points; i++) {
 		for (int j = 0; j < max_dealer_points; j++) {
 			for (int k = 0; k < number_actions; k++) {
-				fprintf(qfile, "%s\n", Q[i][j][k]);
-				fprintf(qcountfile, "%s\n", Q_count[i][j][k]);
+				fprintf(qfile, "%f\n", Q[i][j][k]);
+				fprintf(qcountfile, "%d\n", Q_count[i][j][k]);
 			}
 		}
 	}
@@ -92,9 +95,9 @@ void saveQTables() {
 #ifdef TRAIN
 // rewardSaver saves the reward to the bag
 void rewardSaver(void* arg, void* item) {
-	int reward = *arg;
+	int* reward = arg;
 	int* round = item;
-	round[3] = reward;
+	round[3] = *reward;
 } 
 
 // roundbagSaver saves the round matrix to the table
@@ -191,11 +194,20 @@ void play(char* player_name, char* ip_address, int port) {
 	
 		mem_free(decm);
 	
-		char dec[6];
+		char* dec = mem_malloc_assert(sizeof(char)*6, "dec");
 		int decnum;
 	
 		do {
 			// Deciding next move
+#ifdef TRAIN
+			if ((rand() % 2)) {
+				dec = "HIT";
+				decnum = 0;
+			} else {
+				dec = "STAND";
+				decnum = 1;
+			}
+#else
 			int ppoints = getHandScore(phand);
 			int dpoints = getHandScore(dhand);
 	
@@ -209,7 +221,7 @@ void play(char* player_name, char* ip_address, int port) {
 				dec = "STAND";
 				decnum = 1;
 			}
-	
+#endif
 			if (sendMessage(socket, dec) == -1) {
 				sleep(2);
 				if (sendMessage(socket, dec) == -1) {
@@ -224,7 +236,7 @@ void play(char* player_name, char* ip_address, int port) {
 			round[0] = ppoints;
 			round[1] = dpoints;
 			round[2] = decnum;
-			bag_add(roundbag, round);
+			bag_insert(roundbag, round);
 #endif
 	
 			if (!strcmp(dec, "STAND")) break;
@@ -252,6 +264,7 @@ void play(char* player_name, char* ip_address, int port) {
 				exit(99);
 			}
 			mem_free(decm);
+			mem_free(dec);
 		} while (1);
 		
 		// Getting match result
@@ -272,7 +285,7 @@ void play(char* player_name, char* ip_address, int port) {
 			reward = -1;
 		} else if (!strcmp(result, "BUST")) {
 			reward = -1;
-		} else if (!strcmp(result, "PUSSH")) {
+		} else if (!strcmp(result, "PUSH")) {
 			reward = 0;
 		} else {
 			fprintf(stderr, "%s\n", "Unexpected reward obtained in play function");
@@ -306,7 +319,7 @@ void play(char* player_name, char* ip_address, int port) {
 
 	if (strcmp(beginMessage, "QUIT")) {
 		fprintf(stderr, "%s\n", "Strange Message Received");
-		return 0;
+		exit(0);
 	}
 
 	mem_free(beginMessage);
@@ -324,7 +337,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (atoi(argv[3]) <= 0) {
-		fprintf(stder, "%s\n", "PORT passed is invalid");
+		fprintf(stderr, "%s\n", "PORT passed is invalid");
 		return 1;
 	}
 
