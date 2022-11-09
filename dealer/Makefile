@@ -24,12 +24,21 @@ all: dealer
 dealer: $(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
+dealertest_player:$(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-test: dealer
-	./dealer
+
+# test dealer with test_dealer and test_player
+# run 'make test_dealer' first, then run 'make test_player'
+#test_dealer: dealer
+#	./dealer > testing_dealer.out
+#
+#test_player: dealertest_player
+#	./player > testing_player.out
 
 dealer.o: $U/bag.h $U/mem.h ../cards/cards.h ../network/network.h 
-
+../network/network.o: ../network/network.h 
+../cards/cards.o: ../cards/cards.h
 
 
 clean:

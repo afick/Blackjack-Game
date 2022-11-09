@@ -22,7 +22,7 @@
 
 // headers
 void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send);
-void findResult(int playerHandScore, int dealerHandScore, int listening_socket);
+char* findResult(int playerHandScore, int dealerHandScore, int connected_socket);
 
 
 int main(int argc, char* argv[]) {
@@ -36,13 +36,29 @@ int main(int argc, char* argv[]) {
         printf("Failed to set up server socket\n");
         exit(1);
     }
+    printf("dealer is connected with player\n connected socket: %d\n listening socket: %d\n", connected_socket, listening_socket);
+
 
     // for each game:
     for(int i = 0; i < 3; i++) {
         bust = false;
+
+        char* joinMessage = readMessage(connected_socket);
+        if (strncmp(joinMessage,"JOIN JAKE", strlen("JOIN JAKE")) == 0) {
+            printf("dealer: received JOIN JAKE from player\n");  
+        } else {
+            printf("didn't receive JOIN JAKE, received %s\n", joinMessage);
+        }
+        free(joinMessage);
+        joinMessage = NULL;
+
         // create new, shuffled deck
         deck_t* deck = newDeck();
-        sendMessage(connected_socket, "BEGIN");
+        if (sendMessage(connected_socket, "BEGIN") == -1) {
+            printf("sending BEGIN failed\n");
+        } else {
+            printf("dealer: sent BEGIN\n");
+        }
 
 
         // deal cards to the player, sending messages 
@@ -60,22 +76,48 @@ int main(int argc, char* argv[]) {
         getNewCard(deck, dealerHand, "DEALER", connected_socket, false);
 
     
-        sendMessage(listening_socket, "DECISION");
+        if (sendMessage(connected_socket, "DECISION") == -1) {
+            printf("sending DECISION failed\n");
+        } else {
+            printf("dealer: sent DECISION\n");
+        }
         
 
         // Let the player decide to hit until they are content
-        char* result = readMessage(listening_socket);
-        while(strcmp(result, "HIT") == 0) {
+        char* result = readMessage(connected_socket);
+        if (strncmp(result,"HIT", strlen("HIT")) == 0) {
+            printf("dealer: received HIT from player\n");  
+        } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
+            printf("dealer: received STAND from player\n");  
+        } else {
+            printf("didn't receive HIT or STAND, received %s\n", result);
+        }
+        
+        while(strncmp(result, "HIT", strlen("HIT")) == 0) {
             getNewCard(deck, playerHand, "CARD", connected_socket, true);
             if(getHandScore(playerHand) > 21) {
                 bust = true;
-                free(result);
                 break;
             }
-            sendMessage(listening_socket, "DECISION");
+
+            if (sendMessage(connected_socket, "DECISION") == -1) {
+                printf("sending DECISION failed\n");
+            } else {
+                printf("dealer: sent DECISION\n");
+            }
+
             free(result);
-            result = readMessage(listening_socket);
+            result = NULL;
+            result = readMessage(connected_socket);
+            if (strncmp(result,"HIT", strlen("HIT")) == 0) {
+                printf("dealer: received HIT from player\n");  
+            } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
+                printf("dealer: received STAND from player\n");  
+            } else {
+                printf("didn't receive HIT or STAND, received %s\n", result);
+            }
         }
+        free(result);
 
         // deal the dealer until the hand total is 
         while (!bust && getHandScore(dealerHand) < 17) {
@@ -84,7 +126,13 @@ int main(int argc, char* argv[]) {
 
 
         // Calculate game's result and send message to client
-        findResult(getHandScore(playerHand), getHandScore(dealerHand), listening_socket);
+        char* finalResult = findResult(getHandScore(playerHand), getHandScore(dealerHand), connected_socket);
+        if (sendMessage(connected_socket, finalResult) == -1) {
+            printf("sending %s failed\n", finalResult);
+        } else {
+            printf("dealer: sent %s\n", finalResult);
+        }
+
 
         // Reset and play again
         deleteHand(playerHand);
@@ -104,20 +152,25 @@ void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bo
         addToHand(hand, card);
         if (send) {
             char* message = cardToString(type, card);
-            sendMessage(connected_socket, message);
+            if (sendMessage(connected_socket, message) == -1) {
+                printf("sending %s failed\n", message);
+            } else {
+                printf("dealer: sent %s\n", message);
+            }
             mem_free(message);
         } 
 }
 
 // find the result of the game and message the player
-void findResult(int playerHandScore, int dealerHandScore, int listening_socket) {
+char* findResult(int playerHandScore, int dealerHandScore, int connected_socket) {
     if (playerHandScore > 21) { // player bust condition
-        sendMessage(listening_socket, "RESULT BUST");
+        return "RESULT BUST";
     } else if (dealerHandScore > 21 || playerHandScore > dealerHandScore) { // player win
-        sendMessage(listening_socket, "RESULT WIN");
+        return "RESULT WIN";
     } else if (playerHandScore < dealerHandScore) { // player loss
-        sendMessage(listening_socket, "RESULT LOSS");
+        return "RESULT LOOSE";
     } else if (playerHandScore == dealerHandScore) { // tie condition
-        sendMessage(listening_socket, "RESULT PUSH");
+        return "RESULT PUSH";
     }
+    return "FAILURE";
 }
