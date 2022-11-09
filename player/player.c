@@ -260,6 +260,11 @@ void play(char* player_name, char* ip_address, int port) {
 				if ((decm = readMessage(socket)) == NULL) exit(99);
 			}
 	
+			if (!strcmp(decm, "RESULT BUST")) {
+				mem_free(dec);
+				break;
+			} 
+
 			if (strcmp(decm, "DECISION")) {
 				fprintf(stderr, "%s\n", "Unexpected decision message");
 				exit(99);
@@ -269,7 +274,10 @@ void play(char* player_name, char* ip_address, int port) {
 		} while (1);
 		
 		// Getting match result
-		char* result = readMessage(socket);
+		char* result;
+		if (decm) result = decm;
+		else result = readMessage(socket);
+		
 		if (result == NULL) {
 			sleep(10);
 			if ((result = readMessage(socket)) == NULL) exit(99);
