@@ -14,7 +14,7 @@ LIBS = $U/utils.a
 # TESTING=-DTESTING
 TRAIN=-DTRAIN
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U -fsanitize=address
 CC = gcc
 MAKE = make
 

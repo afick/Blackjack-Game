@@ -33,7 +33,6 @@ void loadQTables() {
 	FILE* qcountfile = fopen("data/qtablecount", "r");
 
 #ifdef TRAIN
-	printf("test of flag");
 	// If this is the first iteration, there might not be a table
 	if (!qfile) {
 		if (qcountfile) fclose(qcountfile);
@@ -56,12 +55,12 @@ void loadQTables() {
 		for (int j = 0; j < max_dealer_points; j++) {
 			for (int k = 0; k < number_actions; k++) {
 				if ((currline = file_readLine(qfile))) {
-					Q[i][j][k] = atoi(currline);
+					sscanf(currline, "%f", &Q[i][j][k]);
 					mem_free(currline);
 				}
 
 				if ((currline = file_readLine(qcountfile))) {
-					Q_count[i][j][k] = atoi(currline);
+					sscanf(currline, "%d", &Q_count[i][j][k]);
 					mem_free(currline);
 				}
 			}
@@ -108,8 +107,9 @@ void roundbagSaver(void* arg, void* item) {
 	int dealer_points = round[1];
 	int action = round[2];
 	int reward = round[3];
-	Q_count[player_points][dealer_points][action] += 1;
-	Q[player_points][dealer_points][action] += (1/(float)Q_count[player_points][dealer_points][action]) * (reward - Q[player_points][dealer_points][action]);
+	Q_count[player_points-1][dealer_points-1][action] += 1; // Throws invalid read in a couple cases
+	printf("Check %d\n", Q_count[player_points-1][dealer_points-1][action]); // file output is wrong without this
+	Q[player_points-1][dealer_points-1][action] += (1/(float)Q_count[player_points-1][dealer_points-1][action]) * (reward - Q[player_points-1][dealer_points-1][action]);
 }
 #endif
 
@@ -193,36 +193,42 @@ void play(char* player_name, char* ip_address, int port) {
 			exit(99);
 		} 
 	
-		mem_free(decm);
+		// mem_free(decm);
 	
 		char* dec = mem_calloc_assert(6, sizeof(char), "Message for dec not created");
 		int decnum;
 	
 		do {
-			// Deciding next move
-#ifdef TRAIN
-			if ((rand() % 2)) {
-				strcpy(dec, "HIT");
-				decnum = 0;
-			} else {
-				strcpy(dec, "STAND");
-				decnum = 1;
-			}
-#else
 			int ppoints = getHandScore(phand);
-			int dpoints = getHandScore(dhand);
-	
-			float hit_chance = Q[ppoints][dpoints][0];
-			float stand_chance = Q[ppoints][dpoints][1];
-	
-			if (hit_chance > stand_chance) {
-				strcpy(dec, "HIT");
-				decnum = 0;
-			} else {
+			if (ppoints > 20) {
 				strcpy(dec, "STAND");
 				decnum = 1;
+			} else {
+				// Deciding next move
+	#ifdef TRAIN
+				if ((rand() % 2)) {
+					strcpy(dec, "HIT");
+					decnum = 0;
+				} else {
+					strcpy(dec, "STAND");
+					decnum = 1;
+				}
+	#else
+				
+				int dpoints = getHandScore(dhand);
+		
+				float hit_chance = Q[ppoints][dpoints][0];
+				float stand_chance = Q[ppoints][dpoints][1];
+		
+				if (hit_chance > stand_chance) {
+					strcpy(dec, "HIT");
+					decnum = 0;
+				} else {
+					strcpy(dec, "STAND");
+					decnum = 1;
+				}
+	#endif
 			}
-#endif
 			if (sendMessage(socket, dec) == -1) {
 				sleep(2);
 				if (sendMessage(socket, dec) == -1) {
@@ -233,7 +239,8 @@ void play(char* player_name, char* ip_address, int port) {
 
 #ifdef TRAIN
 			// Recording round
-			int* round = mem_calloc_assert(4, sizeof(int), "Unable to create round recording in play function in TRAIN mode");
+			int* round = mem_calloc_assert(5, sizeof(int), "Unable to create round recording in play function in TRAIN mode");
+
 			round[0] = getHandScore(phand);
 			round[1] = getHandScore(dhand);
 			round[2] = decnum;
@@ -248,12 +255,13 @@ void play(char* player_name, char* ip_address, int port) {
 				sleep(2);
 				if ((cardm = readMessage(socket)) == NULL) exit(99);
 			}
-	
+
 			card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);
 			
 			// Verify Decision Message
+			mem_free(decm);
 			decm = readMessage(socket);
 			if (decm == NULL) {
 				sleep(2);
@@ -269,19 +277,27 @@ void play(char* player_name, char* ip_address, int port) {
 				fprintf(stderr, "%s\n", "Unexpected decision message");
 				exit(99);
 			}
-			mem_free(decm);
-			mem_free(dec);
+			
 		} while (1);
 		
-		// Getting match result
 		char* result;
-		if (decm) result = decm;
-		else result = readMessage(socket);
+		if (!strcmp(decm, "RESULT BUST")) {
+			result = decm;
+		}
+		else {
+			result = readMessage(socket);
+			mem_free(decm);
+			mem_free(dec);
+		}
+		// mem_free(dec);
+		// Getting match result
+		
+		
 		
 		if (result == NULL) {
 			sleep(10);
 			if ((result = readMessage(socket)) == NULL) exit(99);
-		}
+		} 
 	
 		printf("Match Result: %s\n", result);
 	
@@ -302,6 +318,7 @@ void play(char* player_name, char* ip_address, int port) {
 		}
 
 #endif
+		printf("Reached\n");
 		mem_free(result);
 	
 		// Freeing memory
@@ -328,6 +345,7 @@ void play(char* player_name, char* ip_address, int port) {
 
 	if (strcmp(beginMessage, "QUIT")) {
 		fprintf(stderr, "%s\n", "Strange Message Received");
+		mem_free(beginMessage);
 		exit(0);
 	}
 
