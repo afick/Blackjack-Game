@@ -280,13 +280,13 @@ void play(char* player_name, char* ip_address, int port) {
 #ifdef TRAIN
 		// Saving reward integer
 		int reward;
-		if (!strcmp(result, "WIN")) {
+		if (!strcmp(result, "RESULT WIN")) {
 			reward = 1;
-		} else if (!strcmp(result, "LOOSE")) {
+		} else if (!strcmp(result, "RESULT LOOSE")) {
 			reward = -1;
-		} else if (!strcmp(result, "BUST")) {
+		} else if (!strcmp(result, "RESULT BUST")) {
 			reward = -1;
-		} else if (!strcmp(result, "PUSH")) {
+		} else if (!strcmp(result, "RESULT PUSH")) {
 			reward = 0;
 		} else {
 			fprintf(stderr, "%s\n", "Unexpected reward obtained in play function");
