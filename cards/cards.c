@@ -177,6 +177,20 @@ card_t* newPlayerCard(char* cardString) {
     return NULL;
 }
 
+/**************** cardToString() ****************/
+/* see cards.h for description */
+char* cardToString(char* target, card_t* card) {
+    if (card != NULL && target != NULL && 
+        (strcmp(target, "DEALER") == 0 || strcmp(target, "CARD") == 0)) {
+            char* message = mem_malloc_assert(sizeof(char)*24, "message alloced");
+            sprintf(message, "%s %s of %s", target, numArr[card->number-1], 
+                                                    suitsArr[card->suit-1]);
+            return message;
+        } else {
+            return NULL;
+        }
+}
+
 /**************** newHand() ****************/
 /* see cards.h for description */
 hand_t* newHand(void)
@@ -320,6 +334,10 @@ void cardTest(void) {
     addToHand(hand, card);
     printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
     printf("Hand score: %d\n", getHandScore(hand));
+
+    char* str = cardToString("DEALER", card);
+    printf("Should say DEALER Jack of Clubs: %s\n", str);
+    mem_free(str);
 
     deleteHand(hand);
     printf("\n");

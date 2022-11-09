@@ -53,6 +53,8 @@ To create a new card for the deck in `newCard`, the id of the card is passed in,
 
 To create a new card for the player based on a message from the dealer in `newPlayerCard`, the card string in passed into the function, scanned to extract the number and suit of the card, then we search a suit and number array for a match that will determine the suit/num int value, and then the val of the card is determined with the same logic as above.
 
+To translate a card to a string, as is done by the dealer, `cardToString` takes in the target (who is receiving the card) and the card info itself, and extract the matching strings from the metadata stored in the card to pass back the message formatted as outlined in the design spec.
+
 To pull a card from a deck in `pullCard`, we simply call bag_extract on the deck bag object.
 
 To add a card to a hand in `addToHand`, the card is added to the hand's bag, and the score is updated based on the value of the card. If the new score is above 21, then bag_iterate is called to search for aces and reset the value of them to 1 until the score is less than 21. 

@@ -79,11 +79,13 @@ Functions:
 1. *newPlayerCard*, creates a new card from a player message, returns a pointer to that card
 2. *newDeck*, creates a new deck, returns a pointer to that deck
 3. *newHand*, creates a new hand, returns a pointer to that hand
-4. *pullCard*, removes a card from the deck, returns a pointer to the card
-5. *addToHand*, which adds a card to a hand of cards.
-6. *deleteDeck*, which deletes a deck and all of the cards in the deck
-7. *deleteHand*, which deletes a hand and all of the cards in the hand
-8. *getHandScore*, which returns the score of the cards in the hand.
+4. *newPlayerCard*, creates a card object from a string, return a pointer to that card
+5. *cardToString*, creates a message string from a card object, returns that string
+6. *pullCard*, removes a card from the deck, returns a pointer to the card
+7. *addToHand*, which adds a card to a hand of cards.
+8. *deleteDeck*, which deletes a deck and all of the cards in the deck
+9. *deleteHand*, which deletes a hand and all of the cards in the hand
+10. *getHandScore*, which returns the score of the cards in the hand.
 
 ## Pseudo code for logic/algorithmic flow
 
@@ -111,7 +113,7 @@ The dealer will run as follows:
 
     parse the command line, validate 0 parameters, initialize other modules
     Set up a server socket, wait for player to connect
-    While game is being played 
+    For the number of games to play:
         Create a new shuffled deck of cards
         Send “BEGIN” to the player
         Pull a card from the deck
