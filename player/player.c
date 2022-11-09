@@ -73,8 +73,8 @@ void loadQTables() {
 
 // saveQTables saves the tables to disk
 void saveQTables() {
-	FILE* qfile = fopen("data/qtable", "w+");
-	FILE* qcountfile = fopen("data/qtablecount", "w+");
+	FILE* qfile = fopen("data/qtable", "w");
+	FILE* qcountfile = fopen("data/qtablecount", "w");
 
 	mem_assert(qfile, "Error openin Q table in saving function");
 	mem_assert(qcountfile, "Error opening Q table in saving function");
@@ -233,8 +233,8 @@ void play(char* player_name, char* ip_address, int port) {
 #ifdef TRAIN
 			// Recording round
 			int* round = mem_calloc_assert(4, sizeof(int), "Unable to create round recording in play function in TRAIN mode");
-			round[0] = ppoints;
-			round[1] = dpoints;
+			round[0] = getHandScore(phand);
+			round[1] = getHandScore(dhand);
 			round[2] = decnum;
 			bag_insert(roundbag, round);
 #endif
@@ -248,7 +248,7 @@ void play(char* player_name, char* ip_address, int port) {
 				if ((cardm = readMessage(socket)) == NULL) exit(99);
 			}
 	
-			card = mem_assert(newPlayerCard(cardm), "New card was not craeted in play function");
+			card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);
 			
