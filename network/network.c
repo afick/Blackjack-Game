@@ -106,7 +106,7 @@ char* readMessage(const int socket) {
         return NULL;
     }
 
-    if (read(socket, buffer, 29) < 0) {
+    if (read(socket, buffer, 30) < 0) {
         perror("reading message failed");
         return NULL;
     }
@@ -117,7 +117,7 @@ char* readMessage(const int socket) {
 /**************** sendMessage() ****************/
 /* See network.h for more information */
 int sendMessage(const int socket, char* message) {
-    char* buffer = calloc(30, sizeof(char));
+    char* buffer = malloc(strlen(message)+1);
 
     if (buffer == NULL) {
         perror("calloc failed");
@@ -126,7 +126,7 @@ int sendMessage(const int socket, char* message) {
 
     strcpy(buffer, message);
 
-    if (write(socket, buffer, strlen(buffer)) < 0) {
+    if (write(socket, buffer, strlen(buffer)+1) < 0) {
         perror("writing message failed");
         free(buffer);
         return -1;
