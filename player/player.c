@@ -195,7 +195,7 @@ void play(char* player_name, char* ip_address, int port) {
 	
 		mem_free(decm);
 	
-		char* dec = mem_malloc_assert(sizeof(char)*6, "dec");
+		char* dec = mem_calloc_assert(6, sizeof(char), "Message for dec not created");
 		int decnum;
 	
 		do {
@@ -261,6 +261,7 @@ void play(char* player_name, char* ip_address, int port) {
 			}
 	
 			if (!strcmp(decm, "RESULT BUST")) {
+				mem_free(dec);
 				break;
 			} 
 
@@ -269,6 +270,7 @@ void play(char* player_name, char* ip_address, int port) {
 				exit(99);
 			}
 			mem_free(decm);
+			mem_free(dec);
 		} while (1);
 		
 		// Getting match result
