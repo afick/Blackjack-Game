@@ -146,3 +146,5 @@ Valgrind testing can also be run as stated in Usage section.
 [Socket Programming in C/C++](https://www.geeksforgeeks.org/socket-programming-cc/)
 
 [TCP client/server example](https://cs.dartmouth.edu/~tjp/cs50/examples/client-server/)
+
+[Time Delay in C](https://www.geeksforgeeks.org/time-delay-c/)
