@@ -65,6 +65,16 @@ hand_t* newHand(void);
  */
 card_t* newPlayerCard(char* cardString);
 
+/**************** cardToString ****************/
+/* Create a string message from a card object 
+ *
+ * We return:
+ *   char pointer of the card string.
+ * Caller is responsible for:
+ *      saying whose card it is.
+ */
+char* cardToString(char* target, card_t* card);
+
 /**************** pullCard ****************/
 /* Extract a card from the deck, 
  * return pointer to the card
