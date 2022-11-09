@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "../utils/mem.h"
 #include "../utils/bag.h"
 #include "../cards/cards.h"
@@ -19,12 +20,15 @@
 #define PORT 8092    // server port number 
 #define NUMGAMES 3   // number of games to be played
 
+// headers
+void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send);
+void findResult(int playerHandScore, int dealerHandScore, int listening_socket);
+
 
 int main(int argc, char* argv[]) {
 	// Set up server socket for player
     int connected_socket;
     int listening_socket;
-    char* buffer;
     bool bust;
 
     // check if dealer is connected with player
@@ -90,10 +94,12 @@ int main(int argc, char* argv[]) {
     }
     // when finished, send a QUIT message to the client
     sendMessage(connected_socket, "QUIT");
+    closeServerSocket(connected_socket, listening_socket);
+    exit(0);
 }
 
 // helper function to get a card and perform the associated actions
-static void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send) {
+void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send) {
         card_t* card = pullCard(deck);
         addToHand(hand, card);
         if (send) {
