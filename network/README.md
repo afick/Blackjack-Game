@@ -126,7 +126,11 @@ Valgrind testing can also be run as stated in Usage section.
 ## Acknowledgement
 
 [Networking and Socket Programming](https://www.cs.dartmouth.edu/~tjp/cs50/reading/sockets/)
+
 [Client Demo Program](http://www.cs.dartmouth.edu/~tjp/cs50/project/client.c)
+
 [Server Demo Program](http://www.cs.dartmouth.edu/~tjp/cs50/project/server.c)
+
 [Socket Programming in C/C++](https://www.geeksforgeeks.org/socket-programming-cc/)
+
 [TCP client/server example](https://cs.dartmouth.edu/~tjp/cs50/examples/client-server/)
