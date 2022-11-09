@@ -67,6 +67,7 @@ Pseudocode:
     allocate memory for buffer and safety check
     copy message to be sent to buffer
     write to the socket and safety check
+    call delay() to freeze for 25ms
     free buffer memory
 
 ### 5. closeServerSocket (for dealer)
@@ -86,6 +87,16 @@ Pseudocode:
 
     close player's connection
 
+### 7. delay
+
+Freeze the program for indicated milli seconds.
+
+Pseudocode:
+
+    get current time as start time
+    while current time < start time + wait time
+        do nothing
+
 ## Function prototypes
 
 ### network
@@ -97,6 +108,7 @@ char* readMessage(const int socket);
 int sendMessage(const int socket, char* message);
 void closeServerSocket(const int connectedSocket, const int listeningSocket);
 void closeClientConnection(const int socket);
+void delay(int milli_seconds);
 ```
 
 ## Testing
