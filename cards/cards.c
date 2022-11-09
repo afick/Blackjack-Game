@@ -31,13 +31,13 @@ static char const * numArr[] = {"Ace", "Two", "Three", "Four",
 /**************** global types ****************/
 typedef struct card {
     enum suits suit;        // suit of card    
-    enum nums number;
+    enum nums number;       // number on the card
     int val;                // blackjack value of card
 } card_t;
 
 typedef struct hand {
-    bag_t* cards;
-    int score;
+    bag_t* cards;           // bag of the cards 
+    int score;              // score of the hand
 } hand_t;
 
 typedef bag_t deck_t;
@@ -57,8 +57,8 @@ void swap (int *a, int *b);
 /* see cards.h for description */
 deck_t* newDeck(void)
 {
+    int sizeDeck = 52;    
     deck_t* deck = bag_new();
-    int sizeDeck = 52;
     if (deck != NULL) {
         // create array of 52 numbers
         int cardArr[sizeDeck];
@@ -106,10 +106,13 @@ card_t* newCard(int id)
     if (id > 0) {
         card_t* card = mem_malloc_assert(sizeof(card_t), "Creating card");
         if (card != NULL) {
+            // find the enum value of suit and number
             int suit = (id-1)/13+1;
             int num = (id-1)%13+1;
             card->suit = suit;
             card->number = num;
+            // Assign value of card based on number
+            // Ace starts as a value of 11
             if (num == 1) card->val = 11;
             else if (num > 10) card->val = 10;
             else card->val = num;
@@ -125,11 +128,15 @@ card_t* newCard(int id)
 /* see cards.h for description */
 card_t* newPlayerCard(char* cardString) {
     if (cardString != NULL) {
+        // Allocate memory to scan the message,
+        // number, and suit from the string
         char* message = mem_malloc_assert(sizeof(char)*7, "Mesage string"); // size of largest number
         char* number = mem_malloc_assert(sizeof(char)*6, "Number string"); // size of largest number
         char* suit = mem_malloc_assert(sizeof(char)*9, "Suit string"); // Size of largest suit
 
+        // Pull out the message, number and suit
         sscanf(cardString, "%s %s of %s", message, number, suit);
+        // Check that the message is valid
         if (strcmp(message, "CARD") && strcmp(message, "DEALER")) {
             mem_free(message);
             return NULL;
@@ -139,11 +146,13 @@ card_t* newPlayerCard(char* cardString) {
         enum nums numEnum;
         enum suits suitEnum;
 
+        // Check which number matches
         for (int i = 0; i < King; i++) {
             if (!strcmp(numArr[i], number)) {
                 numEnum = i + 1;
             }
         }
+        // Check which suit matches
         for (int i = 0; i < Spades + 1; i++) {
             if (!strcmp(suitsArr[i], suit)) {
                 suitEnum = i + 1;
@@ -151,6 +160,8 @@ card_t* newPlayerCard(char* cardString) {
         }
         mem_free(number);
         mem_free(suit);
+        // Create a new card, assign number and suit values,
+        // assign card value just as in above function
         card_t* card = mem_malloc_assert(sizeof(card_t), "New card from player");
         if (card != NULL) {
             card->suit = suitEnum;
@@ -170,19 +181,19 @@ card_t* newPlayerCard(char* cardString) {
 /* see cards.h for description */
 hand_t* newHand(void)
 {
-  hand_t* hand = mem_malloc_assert(sizeof(hand_t), "new hand");
+    hand_t* hand = mem_malloc_assert(sizeof(hand_t), "new hand");
 
-  if (hand == NULL) {
-    return NULL;              // error allocating hand
-  } else {
-    // initialize contents of bag structure
-    bag_t* bagHand = bag_new();
-    if (bagHand != NULL) {
-        hand->cards = bagHand;
-        hand->score = 0;
+    if (hand == NULL) {
+        return NULL;                // error allocating hand
+    } else {
+        // initialize contents of hand structure
+        bag_t* bagHand = bag_new();
+        if (bagHand != NULL) {
+            hand->cards = bagHand;
+            hand->score = 0;
+        }
+        return hand;
     }
-    return hand;
-  }
 }
 
 /**************** pullCard() ****************/
@@ -190,10 +201,10 @@ hand_t* newHand(void)
 card_t* pullCard(deck_t* deck)
 {
   if (deck == NULL) {
-    return NULL;              // error allocating bag
+    return NULL;              // error finding deck
   } else {
     bag_t* bag = deck;
-    card_t* card = bag_extract(bag);
+    card_t* card = bag_extract(bag); // extract a card from the deck
     return card;
   }
 }
@@ -202,12 +213,14 @@ card_t* pullCard(deck_t* deck)
 /* see cards.h for description */
 void addToHand(hand_t* hand, card_t* card)
 {
-  if (hand != NULL && card != NULL) {
+  if (hand != NULL && card != NULL) { 
     bag_t* bag = hand->cards;
     int val = card->val;
     if (bag != NULL) {
+        // insert the card into the hand bag
         bag_insert(bag, card);
         int newScore = hand->score + val;
+        // If score is greater than 21, check for aces and update values
         if (newScore > 21) {
             bag_iterate(bag, &newScore, findAces);
         }
@@ -224,6 +237,8 @@ static void findAces(void* arg, void* item) {
     card_t* card = item;
     int* score = arg;
     if (card != NULL) {
+        // If an ace of value 11 is found and the score is still above 21, 
+        // set the ace to value 1 and decrement score by 10
         if (card->val == 11 && *score > 21) {
             card->val = 1;
             *score -= 10; 
@@ -272,6 +287,9 @@ void cardDelete(void* item)
     }
 }
 
+#ifdef TESTING
+/**************** cardTest() ****************/
+/* see cards.h for description */
 void cardTest(void) {
     deck_t* deck = newDeck();
     hand_t* hand = newHand();
@@ -306,3 +324,4 @@ void cardTest(void) {
     deleteHand(hand);
     printf("\n");
 }
+#endif

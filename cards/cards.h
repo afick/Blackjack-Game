@@ -127,6 +127,14 @@ void deleteDeck(deck_t* deck);
  */
 void deleteHand(hand_t* hand);
 
+#ifdef TESTING
+/**************** cardTest ****************/
+/* Tests the functions in the cards module
+ *
+ * We guarantee:
+ *   we print the state of the hand at each step.
+ */
 void cardTest(void);
+#endif
 
 #endif // __CARDS_H
