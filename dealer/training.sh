@@ -10,7 +10,7 @@
 #
 # Alex Fick, CS50, Fall 2022
 
-for i in {1..24}
+for i in {1..10}
 do
     ./dealer-given 1 100 8092
 done
