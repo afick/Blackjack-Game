@@ -8,8 +8,6 @@ According to the [Requirements Spec](REQUIREMENTS.md), the Blackjack game consis
 - Functional decomposition into modules
 - Pseudo code (plain English-like language) for logic/algorithmic flow
 - Major data structures
-- Testing plan
-
 
 ## User interface
 ### Player 
