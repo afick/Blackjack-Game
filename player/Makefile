@@ -13,8 +13,8 @@ LIBS = $U/utils.a
 # uncomment to train the player
 TRAIN=-DTRAIN
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$U -fsanitize=address
-TCFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  -fsanitize=address
+CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$U 
+TCFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  
 CC = gcc
 MAKE = make
 
@@ -23,10 +23,10 @@ MAKE = make
 all: player
 
 player: $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(CFLAGS) $^ $(LIBS) -lncurses -o $@
 
 train: $(OBJS) $(LIBS)
-	$(CC) $(TCFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(TCFLAGS) $^ $(LIBS) -lncurses -o $@
 
 player.o: $U/bag.h $U/mem.h $U/file.h ../cards/cards.h ../network/network.h 
 
