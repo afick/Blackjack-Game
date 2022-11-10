@@ -34,5 +34,6 @@ clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
 	rm -f player
+	rm -f train
 	rm -f core
 	rm -f $(OBJS)

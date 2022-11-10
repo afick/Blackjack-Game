@@ -12,7 +12,7 @@
 
 make train
 
-for i in {1..25}
+for i in {1..2}
 do
     ./train Name 129.170.65.170 8092
 done
