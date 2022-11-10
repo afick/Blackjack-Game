@@ -16,6 +16,7 @@
 #include <file.h>
 #include "../cards/cards.h"
 #include <bag.h>
+#include <ncurses.h>
 
 /***** Global Variables ****/
 

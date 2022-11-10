@@ -22,7 +22,7 @@ MAKE = make
 
 all: dealer
 dealer: $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(CFLAGS) $^ $(LIBS) -lncurses -o $@
 
 dealertest_player:$(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
