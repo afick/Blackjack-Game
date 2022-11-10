@@ -13,7 +13,6 @@
 #include "../utils/bag.h"
 #include "../utils/mem.h"
 #include "cards.h"
-#include <time.h>
 
 
 /**************** file-local global variables ****************/
@@ -66,7 +65,6 @@ deck_t* newDeck(void)
             cardArr[i] = i+1;
         }
         // shuffle the array
-        srand(time(0));
         for (int i = sizeDeck-1; i > 0; i--)
         {
             // Pick a random index from 0 to i
@@ -182,7 +180,7 @@ card_t* newPlayerCard(char* cardString) {
 char* cardToString(char* target, card_t* card) {
     if (card != NULL && target != NULL && 
         (strcmp(target, "DEALER") == 0 || strcmp(target, "CARD") == 0)) {
-            char* message = mem_malloc_assert(sizeof(char)*24, "message alloced");
+            char* message = mem_malloc_assert(sizeof(char)*26, "message alloced");
             sprintf(message, "%s %s of %s", target, numArr[card->number-1], 
                                                     suitsArr[card->suit-1]);
             return message;
@@ -325,7 +323,7 @@ void cardTest(void) {
     printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
     printf("Hand score: %d\n", getHandScore(hand));
 
-    card = newPlayerCard("DEALER Ace of Hearts");
+    card = newPlayerCard("DEALER Eight of Hearts");
     addToHand(hand, card);
     printf("Suit: %d, Number: %d, Val: %d ", card->suit, card->number, card->val);
     printf("Hand score: %d\n", getHandScore(hand));

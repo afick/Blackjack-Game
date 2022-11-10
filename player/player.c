@@ -133,6 +133,7 @@ void play(char* player_name, char* ip_address, int port) {
 
 	if (strcmp(beginMessage, "BEGIN")) {
 		fprintf(stderr, "%s\n", "Unexpected Begin message");
+		mem_free(beginMessage);
 		exit(99);
 	}
 	
