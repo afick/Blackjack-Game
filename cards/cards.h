@@ -125,6 +125,7 @@ int getHandScore(hand_t* hand);
  */
 void deleteDeck(deck_t* deck);
 
+
 /**************** deleteHand ****************/
 /* Delete the whole hand. 
  *
@@ -137,7 +138,6 @@ void deleteDeck(deck_t* deck);
  */
 void deleteHand(hand_t* hand);
 
-#ifdef TESTING
 /**************** cardTest ****************/
 /* Tests the functions in the cards module
  *
@@ -145,6 +145,5 @@ void deleteHand(hand_t* hand);
  *   we print the state of the hand at each step.
  */
 void cardTest(void);
-#endif
 
 #endif // __CARDS_H

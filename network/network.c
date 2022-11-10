@@ -121,6 +121,7 @@ char* readMessage(const int socket) {
 
     if (read(socket, buffer, 30) < 0) {
         perror("reading message failed");
+        free(buffer);
         return NULL;
     }
 

@@ -22,7 +22,7 @@ MAKE = make
 # for memory-leak tests
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
 
-.PHONY: test valgrind clean
+.PHONY: $(LIB) clean
 
 ########### network ##################
 

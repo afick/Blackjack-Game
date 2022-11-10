@@ -88,30 +88,7 @@ int main(int argc, char* argv[]) {
 
         // Let the player decide to hit until they are content
         char* result = readMessage(connected_socket);
-        if (strncmp(result,"HIT", strlen("HIT")) == 0) {
-            printf("dealer: received HIT from player\n");  
-        } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
-            printf("dealer: received STAND from player\n");  
-        } else {
-            printf("didn't receive HIT or STAND, received %s\n", result);
-        }
-        
-        while(strncmp(result, "HIT", strlen("HIT")) == 0) {
-            getNewCard(deck, playerHand, "CARD", connected_socket, true);
-            if(getHandScore(playerHand) > 21) {
-                bust = true;
-                break;
-            }
-
-            if (sendMessage(connected_socket, "DECISION") == -1) {
-                printf("sending DECISION failed\n");
-            } else {
-                printf("dealer: sent DECISION\n");
-            }
-
-            free(result);
-            result = NULL;
-            result = readMessage(connected_socket);
+        if (result != NULL) {
             if (strncmp(result,"HIT", strlen("HIT")) == 0) {
                 printf("dealer: received HIT from player\n");  
             } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
@@ -119,8 +96,35 @@ int main(int argc, char* argv[]) {
             } else {
                 printf("didn't receive HIT or STAND, received %s\n", result);
             }
-        }
-        free(result);
+            while(strncmp(result, "HIT", strlen("HIT")) == 0) {
+                getNewCard(deck, playerHand, "CARD", connected_socket, true);
+                if(getHandScore(playerHand) > 21) {
+                    bust = true;
+                    break;
+                }
+
+                if (sendMessage(connected_socket, "DECISION") == -1) {
+                    printf("sending DECISION failed\n");
+                } else {
+                    printf("dealer: sent DECISION\n");
+                }
+
+                free(result);
+                result = NULL;
+                result = readMessage(connected_socket);
+                if (strncmp(result,"HIT", strlen("HIT")) == 0) {
+                    printf("dealer: received HIT from player\n");  
+                } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
+                    printf("dealer: received STAND from player\n");  
+                } else {
+                    printf("didn't receive HIT or STAND, received %s\n", result);
+                }
+            }
+            free(result);
+        } else continue;
+        
+        
+        
 
         // deal the dealer until the hand total is 
         while (!bust && getHandScore(dealerHand) < 17) {

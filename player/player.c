@@ -140,7 +140,6 @@ void play(char* player_name, char* ip_address, int port) {
 	while (!strcmp(beginMessage,"BEGIN")) {
 		mem_free(beginMessage);
 
-
 		// Set up new round bag
 		bag_t* roundbag = mem_assert(bag_new(), "Round bag not created in play function in TRAIN mode");
 
@@ -325,6 +324,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((beginMessage = readMessage(socket)) == NULL) exit(99);
 		}
+		
 
 		// Record Reward
 		bag_iterate(roundbag, &reward, rewardSaver);

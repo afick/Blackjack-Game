@@ -5,38 +5,36 @@
 
 U = ../utils
 
-OBJS = cards.o cardtest.o
+OBJS = cards.o $U/mem.o $U/bag.o
 LIBS = $U/utils.a
+LIB = cards.a
 
 # comment the following to turn off verbose memory logging
-TESTING=-DTESTING
+# TESTING=-DTESTING
 
-CCFLAGS = -Wall -pedantic -std=c11 -ggdb 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) 
+CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$U
 CC = gcc
 MAKE = make
 # for memory-leak tests
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
 
-cards: $(OBJS)
-	$(CC) $(CCFLAGS) $^ $(LIBS) -o $@
+.PHONY: $(LIB) clean
 
-cardtest: $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+all: $(LIB)
 
-cardtest.o: cards.h 
-cards.o: ../utils/bag.h ../utils/mem.h cards.h
-../utils/bag.o:  ../utils/bag.h
-../utils/mem.o: ../utils/mem.h
+$(LIB): $(OBJS) 
+	ar cr $(LIB) $^ 
 
-test: cardtest
-	valgrind --leak-check=full ./cardtest
 
-.PHONY: test valgrind clean
+cardtest: $(LIB) 
+	$(CC) $(CFLAGS) cardtest.c $(LIB) -o $@
+	./cardtest
 
+cards.o: $U/bag.h $U/mem.h cards.h
 
 clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
-	rm -f cards
+	rm -f cards.a
+	rm -f cardtest
 	rm -f core
