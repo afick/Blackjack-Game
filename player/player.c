@@ -92,7 +92,7 @@ void saveQTables() {
 	fclose(qcountfile);
 }
 
-#ifdef TRAIN
+
 // rewardSaver saves the reward to the bag
 void rewardSaver(void* arg, void* item) {
 	int* reward = arg;
@@ -110,7 +110,7 @@ void roundbagSaver(void* arg, void* item) {
 	Q_count[player_points-1][dealer_points-1][action] += 1; // Throws invalid read in a couple cases
 	Q[player_points-1][dealer_points-1][action] += (1/(float)Q_count[player_points-1][dealer_points-1][action]) * (reward - Q[player_points-1][dealer_points-1][action]);
 }
-#endif
+
 
 // play method begins playing a game
 void play(char* player_name, char* ip_address, int port) {
@@ -139,10 +139,9 @@ void play(char* player_name, char* ip_address, int port) {
 	while (!strcmp(beginMessage,"BEGIN")) {
 		mem_free(beginMessage);
 
-#ifdef TRAIN
+
 		// Set up new round bag
 		bag_t* roundbag = mem_assert(bag_new(), "Round bag not created in play function in TRAIN mode");
-#endif
 
 		// Setting up hands
 		hand_t* phand = mem_assert(newHand(), "Unable to create hand in play function");
@@ -195,7 +194,7 @@ void play(char* player_name, char* ip_address, int port) {
 		// mem_free(decm);
 	
 		char* dec = mem_calloc_assert(6, sizeof(char), "Message for dec not created");
-		int decnum;
+		int decnum = -1;
 	
 		do {
 			int ppoints = getHandScore(phand);
@@ -215,11 +214,11 @@ void play(char* player_name, char* ip_address, int port) {
 	#else
 				
 				int dpoints = getHandScore(dhand);
+
+				float hit_chance = Q[ppoints-1][dpoints-1][0];
+				float stand_chance = Q[ppoints-1][dpoints-1][1];
 		
-				float hit_chance = Q[ppoints][dpoints][0];
-				float stand_chance = Q[ppoints][dpoints][1];
-		
-				if (hit_chance > stand_chance) {
+				if (hit_chance >= stand_chance) {
 					strcpy(dec, "HIT");
 					decnum = 0;
 				} else {
@@ -236,7 +235,6 @@ void play(char* player_name, char* ip_address, int port) {
 				}
 			}
 
-#ifdef TRAIN
 			// Recording round
 			int* round = mem_calloc_assert(5, sizeof(int), "Unable to create round recording in play function in TRAIN mode");
 
@@ -245,7 +243,6 @@ void play(char* player_name, char* ip_address, int port) {
 			// printf("dealer hand val: %d", getHandScore(dhand));
 			round[2] = decnum;
 			bag_insert(roundbag, round);
-#endif
 	
 			if (!strcmp(dec, "STAND")) break;
 	
@@ -301,7 +298,6 @@ void play(char* player_name, char* ip_address, int port) {
 	
 		printf("Match Result: %s\n", result);
 	
-#ifdef TRAIN
 		// Saving reward integer
 		int reward;
 		if (!strcmp(result, "RESULT WIN")) {
@@ -317,7 +313,6 @@ void play(char* player_name, char* ip_address, int port) {
 			exit(99);
 		}
 
-#endif
 		mem_free(result);
 	
 		// Freeing memory
@@ -330,7 +325,6 @@ void play(char* player_name, char* ip_address, int port) {
 			if ((beginMessage = readMessage(socket)) == NULL) exit(99);
 		}
 
-#ifdef TRAIN
 		// Record Reward
 		bag_iterate(roundbag, &reward, rewardSaver);
 
@@ -339,7 +333,7 @@ void play(char* player_name, char* ip_address, int port) {
 
 		// Freeing round bag
 		bag_delete(roundbag, mem_free);
-#endif
+
 	}
 
 	if (strcmp(beginMessage, "QUIT")) {
