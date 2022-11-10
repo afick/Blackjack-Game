@@ -153,7 +153,7 @@ card_t* newPlayerCard(char* cardString) {
             }
         }
         // Check which suit matches
-        for (int i = 0; i < Spades + 1; i++) {
+        for (int i = 0; i < Spades; i++) {
             if (!strcmp(suitsArr[i], suit)) {
                 suitEnum = i + 1;
             }
