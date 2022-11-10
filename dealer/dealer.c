@@ -15,6 +15,7 @@
 #include "../utils/bag.h"
 #include "../cards/cards.h"
 #include "../network/network.h"
+#include <time.h>
 
 
 #define PORT 8092    // server port number 
@@ -30,6 +31,7 @@ int main(int argc, char* argv[]) {
     int connected_socket;
     int listening_socket;
     bool bust;
+    srand(time(0)); // set the seed for deck creation
 
     // check if dealer is connected with player
     if (setUpDealerSocket(PORT, &connected_socket, &listening_socket) == -1) {
@@ -38,20 +40,21 @@ int main(int argc, char* argv[]) {
     }
     printf("dealer is connected with player\n connected socket: %d\n listening socket: %d\n", connected_socket, listening_socket);
 
-
-    // for each game:
-    for(int i = 0; i < 3; i++) {
-        bust = false;
-
-        char* joinMessage = readMessage(connected_socket);
-        if (strncmp(joinMessage,"JOIN JAKE", strlen("JOIN JAKE")) == 0) {
-            printf("dealer: received JOIN JAKE from player\n");  
+    char* joinMessage = readMessage(connected_socket);
+    char* name;
+        if (strncmp(joinMessage,"JOIN ", strlen("JOIN ")) == 0) {
+            printf("dealer: received %s from player\n", joinMessage); 
+            name = mem_malloc(sizeof(char)*(strlen(joinMessage)-4));
+            sscanf(joinMessage, "JOIN %s", name);
         } else {
-            printf("didn't receive JOIN JAKE, received %s\n", joinMessage);
+            printf("didn't receive JOIN message, received %s\n", joinMessage);
         }
         free(joinMessage);
         joinMessage = NULL;
 
+    // for each game:
+    for(int i = 0; i < 3; i++) {
+        bust = false;
         // create new, shuffled deck
         deck_t* deck = newDeck();
         if (sendMessage(connected_socket, "BEGIN") == -1) {
@@ -131,15 +134,17 @@ int main(int argc, char* argv[]) {
             printf("sending %s failed\n", finalResult);
         } else {
             printf("dealer: sent %s\n", finalResult);
+            printf("%s's result: %s\n", name, finalResult);
         }
-
 
         // Reset and play again
         deleteHand(playerHand);
         deleteHand(dealerHand);
         deleteDeck(deck);
 
+        printf("---------------\n");
     }
+    mem_free(name);
     // when finished, send a QUIT message to the client
     sendMessage(connected_socket, "QUIT");
     closeServerSocket(connected_socket, listening_socket);
@@ -150,15 +155,16 @@ int main(int argc, char* argv[]) {
 void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send) {
         card_t* card = pullCard(deck);
         addToHand(hand, card);
+        char* message = cardToString(type, card);
         if (send) {
-            char* message = cardToString(type, card);
             if (sendMessage(connected_socket, message) == -1) {
                 printf("sending %s failed\n", message);
             } else {
                 printf("dealer: sent %s\n", message);
             }
-            mem_free(message);
+            
         } 
+        mem_free(message);
 }
 
 // find the result of the game and message the player

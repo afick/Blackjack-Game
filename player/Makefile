@@ -14,7 +14,7 @@ LIBS = $U/utils.a
 TRAIN=-DTRAIN
 
 CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$U -fsanitize=address
-TCFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U -fsanitize=address
+TCFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  -fsanitize=address
 CC = gcc
 MAKE = make
 
@@ -24,7 +24,6 @@ all: player
 
 player: $(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
-	./player Name 129.170.65.170 8092
 
 train: $(OBJS) $(LIBS)
 	$(CC) $(TCFLAGS) $^ $(LIBS) -o $@
