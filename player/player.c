@@ -107,8 +107,10 @@ void roundbagSaver(void* arg, void* item) {
 	int dealer_points = round[1];
 	int action = round[2];
 	int reward = round[3];
-	Q_count[player_points-1][dealer_points-1][action] += 1; // Throws invalid read in a couple cases
-	Q[player_points-1][dealer_points-1][action] += (1/(float)Q_count[player_points-1][dealer_points-1][action]) * (reward - Q[player_points-1][dealer_points-1][action]);
+	if (Q_count[player_points-1][dealer_points-1][action] < 2147483647) { // protect crossing int limit
+		Q_count[player_points-1][dealer_points-1][action] += 1; 
+		Q[player_points-1][dealer_points-1][action] += (1/(float)Q_count[player_points-1][dealer_points-1][action]) * (reward - Q[player_points-1][dealer_points-1][action]);
+	}
 }
 
 
@@ -153,7 +155,6 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}	
-		printf("card string is: %s\n", cardm);
 		card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
@@ -163,7 +164,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-		printf("card string is: %s\n", cardm);
+
 		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
@@ -174,7 +175,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-		printf("card string is: %s\n", cardm);
+
 		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(dhand, card);
 		mem_free(cardm);
@@ -253,7 +254,6 @@ void play(char* player_name, char* ip_address, int port) {
 				if ((cardm = readMessage(socket)) == NULL) exit(99);
 			}
 
-			printf("card string is: %s\n", cardm);
 			card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);

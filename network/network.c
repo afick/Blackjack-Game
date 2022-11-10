@@ -138,7 +138,6 @@ char* readMessage(const int socket) {
 /**************** sendMessage() ****************/
 /* See network.h for more information */
 int sendMessage(const int socket, char* message) {
-
     // send message and safety check
     if (write(socket, message, strlen(message)+1) < 0) {
         perror("writing message failed");
