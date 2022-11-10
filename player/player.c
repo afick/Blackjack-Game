@@ -153,7 +153,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}	
-	
+		printf("card string is: %s\n", cardm);
 		card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
@@ -163,7 +163,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-	
+		printf("card string is: %s\n", cardm);
 		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
@@ -174,7 +174,7 @@ void play(char* player_name, char* ip_address, int port) {
 			sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-	
+		printf("card string is: %s\n", cardm);
 		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(dhand, card);
 		mem_free(cardm);
@@ -187,7 +187,7 @@ void play(char* player_name, char* ip_address, int port) {
 		}
 	
 		if (strcmp(decm, "DECISION")) {
-			fprintf(stderr, "%s\n", "Unexpected decision message");
+			fprintf(stderr, "Unexpected decision message: %s\n", decm);
 			exit(99);
 		} 
 	
@@ -253,6 +253,7 @@ void play(char* player_name, char* ip_address, int port) {
 				if ((cardm = readMessage(socket)) == NULL) exit(99);
 			}
 
+			printf("card string is: %s\n", cardm);
 			card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);
@@ -271,7 +272,7 @@ void play(char* player_name, char* ip_address, int port) {
 			} 
 
 			if (strcmp(decm, "DECISION")) {
-				fprintf(stderr, "%s\n", "Unexpected decision message");
+				fprintf(stderr, "Unexpected decision message: %s\n", decm);
 				exit(99);
 			}
 			

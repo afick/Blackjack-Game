@@ -128,10 +128,9 @@ card_t* newPlayerCard(char* cardString) {
     if (cardString != NULL) {
         // Allocate memory to scan the message,
         // number, and suit from the string
-        char* message = mem_malloc_assert(sizeof(char)*9, "Mesage string"); // size of largest message
-        char* number = mem_malloc_assert(sizeof(char)*6, "Number string"); // size of largest number
-        char* suit = mem_malloc_assert(sizeof(char)*9, "Suit string"); // Size of largest suit
-
+        char* message = mem_malloc_assert(sizeof(char)*10, "Mesage string"); // size of largest message
+        char* number = mem_malloc_assert(sizeof(char)*10, "Number string"); // size of largest number
+        char* suit = mem_malloc_assert(sizeof(char)*10, "Suit string"); // Size of largest suit
         // Pull out the message, number and suit
         sscanf(cardString, "%s %s of %s", message, number, suit);
         // Check that the message is valid
