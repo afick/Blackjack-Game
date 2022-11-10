@@ -124,31 +124,20 @@ char* readMessage(const int socket) {
         free(buffer);
         return NULL;
     }
-    printf("read message is %s\n", buffer);
+
     return buffer;
 }
 
 /**************** sendMessage() ****************/
 /* See network.h for more information */
 int sendMessage(const int socket, char* message) {
-    // char* buffer = malloc(strlen(message)+1);
-
-    // if (buffer == NULL) {
-    //     perror("calloc failed");
-    //     return -1;
-    // }
-
-    // strcpy(buffer, message);
-    // printf("sent message is %s\n", buffer);
+    
     if (write(socket, message, strlen(message)+1) < 0) {
         perror("writing message failed");
-        // free(buffer);
         return -1;
     }
 
     delay(250);
-
-    // free(buffer);
 
     return 0;
 }
