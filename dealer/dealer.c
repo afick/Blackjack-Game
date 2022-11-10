@@ -19,7 +19,7 @@
 
 
 #define PORT 8092    // server port number 
-#define NUMGAMES 10   // number of games to be played
+#define NUMGAMES 3   // number of games to be played
 
 // headers
 void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send);
@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
             printf("sending DECISION failed\n");
         } else {
             printf("dealer: sent DECISION\n");
+            fflush(stdout);
         }
         
 
