@@ -40,11 +40,12 @@ int connectToDealer(const char* dealer_addr, const int PORT) {
     int sock = 0, player_fd;
     struct sockaddr_in serv_addr; // address of the server
     
+    // Creating socket file descriptor
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         fprintf(stderr, "Socket creation error\n");
         return -1;
     }
-
+    // Initialize the fields of the server address
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
 
@@ -54,6 +55,7 @@ int connectToDealer(const char* dealer_addr, const int PORT) {
         return -1;
     }
 
+    // Connect the socket to that server 
     if ((player_fd = connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) {
         fprintf(stderr, "Connection failed\n");
         return -1;
@@ -82,6 +84,7 @@ int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_sock
         perror("setsockopt failed");
         return -1;
     }
+    // Initialize the fields of the server address
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(PORT);
@@ -97,12 +100,14 @@ int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_sock
         return -1;
     }
 
+    // keep calling accept() until player connects
     while (true) {
         if ((new_socket = accept(dealer_fd, (struct sockaddr*)&serv_addr, (socklen_t*)&addrlen)) != -1) {
             break;
         }
     }
 
+    // store two sockets into pointers in the function parameter
     *listening_socket = dealer_fd;
     *connected_socket = new_socket;
     
@@ -112,43 +117,36 @@ int setUpDealerSocket(const int PORT, int* connected_socket, int* listening_sock
 /**************** readMessage() ****************/
 /* See network.h for more information */
 char* readMessage(const int socket) {
+    // allocate the buffer for storing message
     char* buffer = calloc(30, sizeof(char));
-
+    // safety check
     if (buffer == NULL) {
         perror("calloc failed");
         return NULL;
     }
 
+    // read messagea and safety check
     if (read(socket, buffer, 30) < 0) {
         perror("reading message failed");
         free(buffer);
         return NULL;
     }
-    printf("read message is %s\n", buffer);
+
     return buffer;
 }
 
 /**************** sendMessage() ****************/
 /* See network.h for more information */
 int sendMessage(const int socket, char* message) {
-    // char* buffer = malloc(strlen(message)+1);
 
-    // if (buffer == NULL) {
-    //     perror("calloc failed");
-    //     return -1;
-    // }
-
-    // strcpy(buffer, message);
-    // printf("sent message is %s\n", buffer);
+    // send message and safety check
     if (write(socket, message, strlen(message)+1) < 0) {
         perror("writing message failed");
-        // free(buffer);
         return -1;
     }
 
+    // delay for 250ms
     delay(250);
-
-    // free(buffer);
 
     return 0;
 }
