@@ -20,7 +20,7 @@
 /***** Global Variables ****/
 
 // This defines the dimensions of 
-#define max_player_points 20
+#define max_player_points 21
 #define max_dealer_points 11
 #define number_actions 2
 
@@ -51,8 +51,8 @@ void loadQTables() {
 #endif
 	char* currline;
 
-	for (int i = 0; i < max_player_points; i++) {
-		for (int j = 0; j < max_dealer_points; j++) {
+	for (int i = 4; i < max_player_points; i++) {
+		for (int j = 2; j < max_dealer_points; j++) {
 			for (int k = 0; k < number_actions; k++) {
 				if ((currline = file_readLine(qfile))) {
 					sscanf(currline, "%f", &Q[i][j][k]);
@@ -79,8 +79,8 @@ void saveQTables() {
 	mem_assert(qfile, "Error openin Q table in saving function");
 	mem_assert(qcountfile, "Error opening Q table in saving function");
 
-	for (int i = 0; i < max_player_points; i++) {
-		for (int j = 0; j < max_dealer_points; j++) {
+	for (int i = 4; i < max_player_points; i++) {
+		for (int j = 2; j < max_dealer_points; j++) {
 			for (int k = 0; k < number_actions; k++) {
 				fprintf(qfile, "%f\n", Q[i][j][k]);
 				fprintf(qcountfile, "%d\n", Q_count[i][j][k]);
@@ -108,7 +108,6 @@ void roundbagSaver(void* arg, void* item) {
 	int action = round[2];
 	int reward = round[3];
 	Q_count[player_points-1][dealer_points-1][action] += 1; // Throws invalid read in a couple cases
-	printf("Check %d\n", Q_count[player_points-1][dealer_points-1][action]); // file output is wrong without this
 	Q[player_points-1][dealer_points-1][action] += (1/(float)Q_count[player_points-1][dealer_points-1][action]) * (reward - Q[player_points-1][dealer_points-1][action]);
 }
 #endif
@@ -243,6 +242,7 @@ void play(char* player_name, char* ip_address, int port) {
 
 			round[0] = getHandScore(phand);
 			round[1] = getHandScore(dhand);
+			// printf("dealer hand val: %d", getHandScore(dhand));
 			round[2] = decnum;
 			bag_insert(roundbag, round);
 #endif
@@ -318,7 +318,6 @@ void play(char* player_name, char* ip_address, int port) {
 		}
 
 #endif
-		printf("Reached\n");
 		mem_free(result);
 	
 		// Freeing memory
