@@ -14,7 +14,7 @@ LIBS = $U/utils.a
 # TESTING=-DTESTING
 TRAIN=-DTRAIN
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U -fsanitize=address
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U 
 CC = gcc
 MAKE = make
 
@@ -32,7 +32,7 @@ dealertest_player:$(OBJS) $(LIBS)
 
 test: 
 	bash -v testing.sh &> testing.out 
-	
+
 # test dealer with test_dealer and test_player
 # run 'make test_dealer' first, then run 'make test_player'
 #test_dealer: dealer

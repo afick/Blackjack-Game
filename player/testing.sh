@@ -10,7 +10,7 @@
 rm -rf dealer.out ; touch dealer.out
 
 # Making everything
-cd .. ; make ; cd player
+cd .. ; make clean ; make ; cd player
 
 # Testing with no arguments
 ./player
@@ -28,7 +28,7 @@ cd .. ; make ; cd player
 ./player whatevername whateverip 0
 
 # Testing with dealer
-cd ../dealer ; ./dealer 10 8092 > dealer.out 2>&1 & 
+cd ../dealer ; ./dealer 50 8092 > dealer.out 2>&1 & 
 
 IPADDR=$(curl ifconfig.me)
 
@@ -36,3 +36,7 @@ echo $IPADDR
 
 cd ../player ; ./player Name $IPADDR 8092
 
+# test with provided dealer
+cd ../dealer ; ./dealer-given 1 50 8092 > dealer.out 2>&1 & 
+
+cd ../player ; ./player Name $IPADDR 8092

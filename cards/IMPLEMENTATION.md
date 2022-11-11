@@ -1,4 +1,4 @@
-# Blackjack Cards Module
+# CS50 Blackjack Final Project Cards module
 ## Implementation Specification
 
 In this document we reference the [Requirements Specification](../REQUIREMENTS.md) and [Design Specification](../DESIGN.md) and focus on the implementation-specific decisions.
@@ -25,7 +25,7 @@ The 'hand' holds a bag of the card structs in the hand, as well as a total score
 The 'deck' starts filled with 52 shuffled cards. Each time `pullCard` is called on a deck, it removes a card from the deck. 
 ### Usage
 
-The *cards* module, defined in `cards.h` and implemented in `cards.c`, and exports the following functions:
+The *cards* module is defined in `cards.h` and implemented in `cards.c`, and exports the following functions:
 
 ```c
 deck_t* newDeck(void);
@@ -80,9 +80,3 @@ No assumptions beyond those that are clear from the spec.
 
 To compile, simply `make cards.o`.
 
-### Testing
-
-The `cardtest.c` program runs the cards built-in test method. This built in method creates a deck and a hand, pulling a card from the deck, inserting it into the hand, and outputting the card and the hand score at each insertion to the hand. It then tests creating cards from string, and does the same insert and output process.
-
-To test, simply `make test`.
-It runs with valgrind to verify there are no memory leaks

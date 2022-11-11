@@ -12,36 +12,82 @@ _module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tc
 #
 # usage: bash -v testing.sh &> testing.out 
 #
-# input: 
-# output: 
-#
 # Team 12, CS50, Fall 2022
 
 # Make dealer output file
 rm -rf dealer.out ; touch dealer.out
 
 # Making everything
-cd .. ; make ; cd player
+cd .. ; make clean ; make ; cd player
+make[1]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
+rm -f *~
+rm -f TAGS
+make -C utils clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+rm -rf core
+rm -rf utils.a *.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+make -C player clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f player
+rm -f core
+rm -f player.o ../cards/cards.o ../network/network.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+make -C dealer clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f dealer
+rm -f ncdealer
+rm -f data/*
+rm -f core
+rm -f dealer.o ../cards/cards.o ../network/network.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+make -C cards clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f cards.a
+rm -f cardtest
+rm -f core
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+make -C network clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+rm -f core
+rm -f *.a *~ *.o *.out network dealer player
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+make[1]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 make[1]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 make -C utils
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
-make[2]: 'utils.a' is up to date.
+cc    -c -o mem.o mem.c
+cc    -c -o file.o file.c
+cc    -c -o bag.o bag.c
+ar cr utils.a mem.o file.o bag.o
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
 make -C network
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o network.o network.c
 ar cr network.a network.o
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
 make -C cards
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+gcc -Wall -pedantic -std=c11 -ggdb -I../utils   -c -o cards.o cards.c
 ar cr cards.a cards.o ../utils/mem.o ../utils/bag.o 
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
 make -C player
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
-make[2]: Nothing to be done for 'all'.
+gcc -Wall -pedantic -std=c11 -ggdb  -I../utils     -c -o player.o player.c
+gcc -Wall -pedantic -std=c11 -ggdb  -I../utils   player.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -o player
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
 make -C dealer
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
-make[2]: Nothing to be done for 'all'.
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils -fsanitize=address   -c -o dealer.o dealer.c
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils -fsanitize=address dealer.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -o dealer
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils -fsanitize=address   -c -o ncdealer.o ncdealer.c
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils -fsanitize=address ncdealer.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -lncurses -o ncdealer
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
 make[1]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 
@@ -66,25 +112,67 @@ Not enough arguments. Usage: player <player name> <server’s IP address> <PORT 
 PORT passed is invalid
 
 # Testing with dealer
-cd ../dealer ; ./dealer 10 8092 > dealer.out 2>&1 & 
+cd ../dealer ; ./dealer 50 8092 > dealer.out 2>&1 & 
 
 IPADDR=$(curl ifconfig.me)
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    14  100    14    0     0    252      0 --:--:-- --:--:-- --:--:--   254
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    14  100    14    0     0    247      0 --:--:-- --:--:-- --:--:--   245100    14  100    14    0     0    238      0 --:--:-- --:--:-- --:--:--   237
 
 echo $IPADDR
 129.170.65.170
 
-cd ../player ; ./player Name $IPADDR 8092
-Training Match Result: RESULT WIN
-Training Match Result: RESULT BUST
-Training Match Result: RESULT WIN
-Training Match Result: RESULT BUST
-Training Match Result: RESULT BUST
-Training Match Result: RESULT LOOSE
-Training Match Result: RESULT WIN
-Training Match Result: RESULT PUSH
-Training Match Result: RESULT BUST
-Training Match Result: RESULT LOOSE
+cd ../player ; valgrind ./player Name $IPADDR 8092
+==2842484== Memcheck, a memory error detector
+==2842484== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2842484== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2842484== Command: ./player Name 129.170.65.170 8092
+==2842484== 
+==2842484== Invalid write of size 1
+==2842484==    at 0x48F15F3: __vfscanf_internal (vfscanf-internal.c:1101)
+==2842484==    by 0x48EE3E1: __isoc99_sscanf (isoc99_sscanf.c:31)
+==2842484==    by 0x10B9CA: newPlayerCard (cards.c:135)
+==2842484==    by 0x10AF3E: play (player.c:264)
+==2842484==    by 0x10A681: main (player.c:60)
+==2842484==  Address 0x4ad39b7 is 0 bytes after a block of size 7 alloc'd
+==2842484==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2842484==    by 0x10C62D: mem_malloc_assert (in /thayerfs/home/f005cqk/cs50/labs/project-team-12/player/player)
+==2842484==    by 0x10B96F: newPlayerCard (cards.c:131)
+==2842484==    by 0x10AF3E: play (player.c:264)
+==2842484==    by 0x10A681: main (player.c:60)
+==2842484== 
+==2842484== Invalid write of size 1
+==2842484==    at 0x48F1664: __vfscanf_internal (vfscanf-internal.c:2983)
+==2842484==    by 0x48EE3E1: __isoc99_sscanf (isoc99_sscanf.c:31)
+==2842484==    by 0x10B9CA: newPlayerCard (cards.c:135)
+==2842484==    by 0x10AF3E: play (player.c:264)
+==2842484==    by 0x10A681: main (player.c:60)
+==2842484==  Address 0x4ad39b8 is 1 bytes after a block of size 7 alloc'd
+==2842484==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2842484==    by 0x10C62D: mem_malloc_assert (in /thayerfs/home/f005cqk/cs50/labs/project-team-12/player/player)
+==2842484==    by 0x10B96F: newPlayerCard (cards.c:131)
+==2842484==    by 0x10AF3E: play (player.c:264)
+==2842484==    by 0x10A681: main (player.c:60)
+==2842484== 
+Couldn't create card
+==2842484== 
+==2842484== HEAP SUMMARY:
+==2842484==     in use at exit: 142 bytes in 10 blocks
+==2842484==   total heap usage: 638 allocs, 628 frees, 67,198 bytes allocated
+==2842484== 
+==2842484== LEAK SUMMARY:
+==2842484==    definitely lost: 0 bytes in 0 blocks
+==2842484==    indirectly lost: 0 bytes in 0 blocks
+==2842484==      possibly lost: 0 bytes in 0 blocks
+==2842484==    still reachable: 142 bytes in 10 blocks
+==2842484==         suppressed: 0 bytes in 0 blocks
+==2842484== Rerun with --leak-check=full to see details of leaked memory
+==2842484== 
+==2842484== For lists of detected and suppressed errors, rerun with: -s
+==2842484== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
 
+# test with provided dealer
+cd ../dealer ; ./dealer-given 1 50 8092 > dealer.out 2>&1 & 
+
+cd ../player ; ./player Name $IPADDR 8092
+reading message failed: Connection reset by peer
