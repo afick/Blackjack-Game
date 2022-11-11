@@ -51,6 +51,8 @@ clean:
 	rm -f *~ *.o
 	rm -f dealer
 	rm -f ncdealer
+	rm -f testing.out
+	rm -f dealer.out
 	rm -f data/*
 	rm -f core
 	rm -f $(OBJS)
