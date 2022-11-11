@@ -1,5 +1,5 @@
 # CS50 Final Project
-## Team name
+## Team 12
 
 The assignment is in a [public repo](https://github.com/cs50-2022-fall/project).
 Do not clone that repo; view it on GitHub.  One person from your team should accept the assignment from GitHub classroom.

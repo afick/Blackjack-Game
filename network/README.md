@@ -64,11 +64,9 @@ Write message to the socket (from dealer or player).
 
 Pseudocode:
 
-    allocate memory for buffer and safety check
-    copy message to be sent to buffer
     write to the socket and safety check
-    call delay() to freeze for 25ms
-    free buffer memory
+    call delay() to freeze for 250ms
+    return 0
 
 ### 5. closeServerSocket (for dealer)
 
@@ -113,6 +111,18 @@ void delay(int milli_seconds);
 
 ## Testing
 
+Note: default server IP address is 129.170.64.104. To run with different IP address, go to `networktest_player.c` and modify `SERV_ADDR` to your IP address. To get your IP address, run
+
+```
+ip addr
+```
+
+or
+
+```
+wget -O - -q https://checkip.amazonaws.com
+```
+ 
 Two testing files `networktest_dealer.c` and `networktest_player.c` are implemented to simulate dealer and player respectively. 
 
 The executable of `networktest_dealer.c` is `dealer` and that of `networktest_player.c` is `player`. Two executables should be run on two separate terminals. `dealer` initializes a socket by calling setUpDealerSocket() and waits for `player` to connect. `player` initializes a socket and connects to `dealer` by calling connectToDealer(). Once connected, `dealer` and `player` read from the socket with readMessage() and write to the socket with sendMessage() as below.
