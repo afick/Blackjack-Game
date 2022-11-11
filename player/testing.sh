@@ -37,6 +37,6 @@ echo $IPADDR
 cd ../player ; ./player Name $IPADDR 8092
 
 # test with provided dealer
-cd ../dealer ; ./dealer-given 1 50 8092 > dealer.out 2>&1 & 
+cd ../dealer ; ./dealer-given 1 50 8092 > ../player/dealer.out 2>&1 & 
 
 cd ../player ; ./player Name $IPADDR 8092

@@ -52,7 +52,7 @@ echo $?
 
 IPADDR=$(curl ifconfig.me)
 
-cd ../player ; ./player Name $IPADDR 8092 > player.out 2>&1 & 
+cd ../player ; ./player Name $IPADDR 8092 > ../dealer/player.out 2>&1 & 
 
 # Check status code
 echo $?
