@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         if (sendMessage(connected_socket, "BEGIN") == -1) {
             printf("sending BEGIN failed\n");
         } else {
-            printf("dealer: sent BEGIN\n");
+            printf("dealer: sent BEGIN %d\n", i+1);
         }
 
 

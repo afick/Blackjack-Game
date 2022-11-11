@@ -18,16 +18,17 @@
 #include <time.h>
 #include <ncurses.h>
 
-
-#define PORT 8092    // server port number 
-#define NUMGAMES 10   // number of games to be played
-
 // headers
 void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send, int* row);
 char* findResult(int playerHandScore, int dealerHandScore, int connected_socket);
-
+static void parseArgs(const int argc, char* argv[], int* games, int* port);
 
 int main(int argc, char* argv[]) {
+    // Validate command line args
+    int numGames = 0;
+    int port = 0;
+    parseArgs(argc, argv, &numGames, &port);
+
     // init screen and sets up screen
     initscr();
 	// Set up server socket for player
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]) {
     srand(time(0)); // set the seed for deck creation
 
     // check if dealer is connected with player
-    if (setUpDealerSocket(PORT, &connected_socket, &listening_socket) == -1) {
+    if (setUpDealerSocket(port, &connected_socket, &listening_socket) == -1) {
         fprintf(stderr, "Failed to set up server socket\n");
         exit(1);
     }
@@ -67,7 +68,7 @@ int main(int argc, char* argv[]) {
     joinMessage = NULL;
 
     // for each game:
-    for(int i = 0; i < NUMGAMES; i++) {
+    for(int i = 0; i < numGames; i++) {
         bust = false;
         // init screen and sets up screen
         initscr();
@@ -170,8 +171,9 @@ int main(int argc, char* argv[]) {
         deleteHand(playerHand);
         deleteHand(dealerHand);
         deleteDeck(deck);
-
-        printw("---------------\n Click any key to continue to next game\n");
+        
+        if (i == numGames-1) printw("---------------\n Click any key to finish\n");
+        else printw("---------------\n Click any key to continue\n");
         refresh();
         getch();
         clear();   
@@ -183,6 +185,29 @@ int main(int argc, char* argv[]) {
     sendMessage(connected_socket, "QUIT");
     closeServerSocket(connected_socket, listening_socket);
     return 0;
+}
+
+/**************** parseArgs ****************/
+/* Validates command line arguments
+ *
+ * We return:
+ *   Nothing if successful
+ *   Exit w/ Non-Zero status if an error is found and error message to stderr
+ */
+static void parseArgs(const int argc, char* argv[], int* games, int* port) {
+	// Check input arguments: # of arguments
+	if (argc != 3) {
+		fprintf(stderr, "usage: ./dealer <number of games> <port>\n");
+		exit(1);
+	}
+    if(sscanf(argv[1], "%d", games) != 1) {
+        fprintf(stderr, "Incorrect usage. Number of games must be an integer.\n");
+        exit(1);
+    }
+    if(sscanf(argv[2], "%d", port) != 1) {
+        fprintf(stderr, "Incorrect usage. Port must be an integer.\n");
+        exit(1);
+    }
 }
 
 // helper function to get a card and perform the associated actions
