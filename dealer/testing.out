@@ -18,27 +18,76 @@ _module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tc
 rm -rf player.out ; touch player.out
 
 # Making everything
-cd .. ; make ; cd dealer
+cd .. ; make clean ; make ; cd dealer
+make[1]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
+rm -f *~
+rm -f TAGS
+make -C utils clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+rm -rf core
+rm -rf utils.a *.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+make -C player clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f player
+rm -f core
+rm -f player.o ../cards/cards.o ../network/network.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+make -C dealer clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f dealer
+rm -f ncdealer
+rm -f data/*
+rm -f core
+rm -f dealer.o ../cards/cards.o ../network/network.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+make -C cards clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+rm -rf *.dSYM  # MacOS debugger info
+rm -f *~ *.o
+rm -f cards.a
+rm -f cardtest
+rm -f core
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+make -C network clean
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+rm -f core
+rm -f *.a *~ *.o *.out network dealer player
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+make[1]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 make[1]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 make -C utils
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
-make[2]: 'utils.a' is up to date.
+cc    -c -o mem.o mem.c
+cc    -c -o file.o file.c
+cc    -c -o bag.o bag.c
+ar cr utils.a mem.o file.o bag.o
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
 make -C network
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o network.o network.c
 ar cr network.a network.o
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
 make -C cards
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+gcc -Wall -pedantic -std=c11 -ggdb -I../utils   -c -o cards.o cards.c
 ar cr cards.a cards.o ../utils/mem.o ../utils/bag.o 
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
 make -C player
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
-make[2]: Nothing to be done for 'all'.
+gcc -Wall -pedantic -std=c11 -ggdb  -I../utils     -c -o player.o player.c
+gcc -Wall -pedantic -std=c11 -ggdb  -I../utils   player.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -o player
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
 make -C dealer
 make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
-make[2]: Nothing to be done for 'all'.
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils    -c -o dealer.o dealer.c
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils  dealer.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -o dealer
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils    -c -o ncdealer.o ncdealer.c
+gcc -Wall -pedantic -std=c11 -ggdb -DTRAIN -I../utils  ncdealer.o ../cards/cards.o ../network/network.o ../utils/utils.a ../utils/utils.a -lncurses -o ncdealer
 make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
 make[1]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
 
@@ -92,12 +141,17 @@ echo $?
 3
 
 # Testing with player
-./dealer 10 8092 &
+valgrind ./dealer 50 8092 &
 
 IPADDR=$(curl ifconfig.me)
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    14  100    14    0     0    250      0 --:--:-- --:--:-- --:--:--   254
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0==2846764== Memcheck, a memory error detector
+==2846764== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2846764== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2846764== Command: ./dealer 50 8092
+==2846764== 
+100    14  100    14    0     0    243      0 --:--:-- --:--:-- --:--:--   245
 
 cd ../player ; ./player Name $IPADDR 8092 > player.out 2>&1 & 
 
@@ -105,104 +159,3 @@ cd ../player ; ./player Name $IPADDR 8092 > player.out 2>&1 &
 echo $?
 0
 
-Dealer is connected with player
- Connected socket: 4
- Listening socket: 3
-
-Name joined the game!
-
-dealer: sent BEGIN 1
-dealer: sent CARD Five of Hearts
-dealer: sent CARD Nine of Hearts
-dealer: sent DEALER Seven of Spades
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Five of Clubs
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT WIN
----------------
-dealer: sent BEGIN 2
-dealer: sent CARD Five of Hearts
-dealer: sent CARD Ace of Diamonds
-dealer: sent DEALER Eight of Diamonds
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Five of Spades
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT WIN
----------------
-dealer: sent BEGIN 3
-dealer: sent CARD Ten of Diamonds
-dealer: sent CARD Three of Clubs
-dealer: sent DEALER Six of Spades
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Queen of Hearts
-Name's result: RESULT BUST
----------------
-dealer: sent BEGIN 4
-dealer: sent CARD Seven of Clubs
-dealer: sent CARD King of Spades
-dealer: sent DEALER Queen of Spades
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Ten of Spades
-Name's result: RESULT BUST
----------------
-dealer: sent BEGIN 5
-dealer: sent CARD Five of Hearts
-dealer: sent CARD Six of Diamonds
-dealer: sent DEALER Five of Diamonds
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Queen of Clubs
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT WIN
----------------
-dealer: sent BEGIN 6
-dealer: sent CARD Eight of Spades
-dealer: sent CARD Four of Hearts
-dealer: sent DEALER Seven of Diamonds
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT LOOSE
----------------
-dealer: sent BEGIN 7
-dealer: sent CARD Ten of Diamonds
-dealer: sent CARD Ace of Diamonds
-dealer: sent DEALER King of Spades
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT WIN
----------------
-dealer: sent BEGIN 8
-dealer: sent CARD Seven of Hearts
-dealer: sent CARD Queen of Clubs
-dealer: sent DEALER Ten of Spades
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT WIN
----------------
-dealer: sent BEGIN 9
-dealer: sent CARD Six of Hearts
-dealer: sent CARD Queen of Diamonds
-dealer: sent DEALER Eight of Clubs
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Four of Spades
-dealer: sent DECISION
-dealer: received HIT from player
-dealer: sent CARD Eight of Hearts
-Name's result: RESULT BUST
----------------
-dealer: sent BEGIN 10
-dealer: sent CARD Five of Diamonds
-dealer: sent CARD Ace of Spades
-dealer: sent DEALER Ace of Hearts
-dealer: sent DECISION
-dealer: received STAND from player
-Name's result: RESULT LOOSE
----------------

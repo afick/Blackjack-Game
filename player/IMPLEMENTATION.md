@@ -1,4 +1,4 @@
-# Blackjack Player
+# CS50 Blackjack Final Project Player module
 ## Implementation Specification
 
 In this document we reference the [Requirements Specification](../REQUIREMENTS.md) and [Design Specification](../DESIGN.md) and focus on the implementation-specific decisions.
@@ -72,4 +72,3 @@ The only assumptions made are that the player name provided to the command line 
 
 To compile, simply run `make` on the command line.
 
-### Testing

@@ -22,7 +22,7 @@ The player program **shall**:
 The dealer program **shall**:
 
 1. Execute the dealer from a command line with usage syntax
-   * `./dealer` 
+   * `./dealer <number of games> <port>` 
     
 1. Set up a server socket listening for a client/player to connect
 1. Once the client connects, pass messages back and forth to the client, doing the following

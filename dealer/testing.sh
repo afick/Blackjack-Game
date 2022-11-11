@@ -10,7 +10,7 @@
 rm -rf player.out ; touch player.out
 
 # Making everything
-cd .. ; make ; cd dealer
+cd .. ; make clean ; make ; cd dealer
 
 # Testing with no arguments
 ./dealer
@@ -48,7 +48,7 @@ echo $?
 echo $?
 
 # Testing with player
-./dealer 10 8092 &
+./dealer 50 8092 &
 
 IPADDR=$(curl ifconfig.me)
 

@@ -22,10 +22,14 @@ $ ./player Alex 192.158.1.38 8090
 ```
 
 ### Dealer 
-As described in the [Requirements Spec](REQUIREMENTS.md), the player’s only interface with the user is on the command-line; it must always have 3 arguments.
+As described in the [Requirements Spec](REQUIREMENTS.md), the player’s only interface with the user is on the command-line; it must always have 2 arguments.
 
 ```bash
-$ dealer 
+$ ./dealer  <num games> <PORT>
+```
+For example, we would like to play 10 games with Alex on port 8090. The syntax to do so would be 
+```bash
+$ ./dealer 10 8090
 ```
 
 ## Inputs and outputs
@@ -40,15 +44,15 @@ We anticipate the following modules or functions:
 
  1. *main*, which parses arguments and initializes other modules. Uses an ifdef to determine whether to play or train
  2. *loadQTables*, which loads the Q counts table and loads the Q averages Table
- 3. *playGames*, which communicates with the dealer and plays the games, choosing the optimal move in every given situation based on the Q tables.
- 4. *trainPlayer*, which communicates with the dealer, keeps track of all states seen in every game, updates the Q tables based on the result of the game. (might just put this inside of playGames instead)
- 5. *updateQTables*, which updates the values in the Q averages table and the Q counts table based on the state of cards seen and the result of the game.
- 6. *saveQTables*, which re-writes the Q table files on the disk with the updated Q tables. 
+ 3. *play*, which communicates with the dealer and plays the games, choosing the optimal move in every given situation based on the Q tables, unless it is in training mode, in which case it chooses an action randomly.
+ 4. *updateQTables*, which updates the values in the Q averages table and the Q counts table based on the state of cards seen and the result of the game.
+ 5. *saveQTables*, which re-writes the Q table files on the disk with the updated Q tables. 
   
 ### Dealer
 1. *main*, which parses arguments and initializes other modules.
-2. *hostGames*, which sends messages back and forth to the player.
-3. *findResult*, which determines the result of the game.
+2. *play*, which plays the games by sending messages back and forth to the player.
+3. *getNewCard*, which pulls a card from the deck, adds it to a hand, and sends the appropriate message to the player.
+4. *findResult*, which determines the result of the game.
 
 ### Other Modules 
 

@@ -2,7 +2,7 @@
  *
  * dealer.c - Executes the dealer in the blackjack game
  *
- * usage: dealer
+ * usage: ./ncdealer <number of games> <port>
  * Jake Olson, Project Team 12, CS 50 Fall 2022
  *
  */
@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
     // check if dealer is connected with player
     if (setUpDealerSocket(port, &connected_socket, &listening_socket) == -1) {
         fprintf(stderr, "Failed to set up server socket\n");
+        endwin();
         exit(1);
     }
     printw("Blackjack Dealer is connected with Player\n Connected Socket: %d\n Listening socket: %d\n\n", connected_socket, listening_socket);
@@ -204,7 +205,7 @@ static void parseArgs(const int argc, char* argv[], int* games, int* port) {
         fprintf(stderr, "Incorrect usage. Number of games must be an integer.\n");
         exit(2);
     }
-    if (games < 1) {
+    if (*games < 1) {
         fprintf(stderr, "Incorrect usage. Number of games must be at least 1.\n");
         exit(3);
     }
@@ -212,7 +213,7 @@ static void parseArgs(const int argc, char* argv[], int* games, int* port) {
         fprintf(stderr, "Incorrect usage. Port must be an integer.\n");
         exit(4);
     }
-    if (port < 1) {
+    if (*port < 1) {
         fprintf(stderr, "Incorrect usage. Port is invalid.\n");
         exit(5);
     }
