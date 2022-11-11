@@ -5,7 +5,6 @@
 
 # utils macro
 U = ../utils
-# common directory macro
 
 OBJS = dealer.o ../cards/cards.o ../network/network.o
 LIBS = $U/utils.a
@@ -30,16 +29,8 @@ ncdealer: ncdealer.o ../cards/cards.o ../network/network.o $(LIBS)
 dealertest_player:$(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-test: 
-	bash -v testing.sh &> testing.out 
-
-# test dealer with test_dealer and test_player
-# run 'make test_dealer' first, then run 'make test_player'
-#test_dealer: dealer
-#	./dealer > testing_dealer.out
-#
-#test_player: dealertest_player
-#	./player > testing_player.out
+test: all
+	bash -v testing.sh &> testing.out
 
 dealer.o: $U/bag.h $U/mem.h ../cards/cards.h ../network/network.h 
 ../network/network.o: ../network/network.h 

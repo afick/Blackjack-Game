@@ -9,9 +9,6 @@
 # Make player output file
 rm -rf player.out ; touch player.out
 
-# Making everything
-cd .. ; make clean ; make ; cd dealer
-
 # Testing with no arguments
 ./dealer
 # Check error code
@@ -52,7 +49,7 @@ echo $?
 
 IPADDR=$(curl ifconfig.me)
 
-cd ../player ; ./player Name $IPADDR 8092 > ../dealer/player.out 2>&1 & 
+cd ../player ; ./player Name $IPADDR 8092 > ../dealer/player.out 2>&1 
 
 # Check status code
 echo $?
