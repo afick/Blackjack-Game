@@ -45,11 +45,11 @@ No assumptions beyond those that are clear from the spec.
 
 ### Files
 
-REPLACE
-
 * `Makefile` - compilation procedure
-* `dealer.h` - the interface
-* `dealer.c` - the implementation
+* `dealer.c` - the implementation of dealer
+* `ncdealer.c` - the implementation of ncurses dealer
+* `training.sh` - the training script
+* `testing.sh` - the testing script
 
 ### Compilation
 

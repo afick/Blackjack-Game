@@ -11,7 +11,7 @@ OBJS = player.o ../cards/cards.o ../network/network.o
 LIBS = $U/utils.a
 
 # uncomment to train the player
-TRAIN=-DTRAIN
+# TRAIN=-DTRAIN
 
 CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  
 CC = gcc
@@ -34,4 +34,6 @@ clean:
 	rm -f *~ *.o
 	rm -f player
 	rm -f core
+	rm -f testing.out
+	rm -f dealer.out
 	rm -f $(OBJS)
