@@ -14,6 +14,6 @@ make player # make sure train flag is uncommented
 
 for i in {1..10000}
 do
-    ./player Alex 129.170.65.170 8092
+    ./player Alex 129.170.65.170 8099
 done
 
