@@ -20,7 +20,7 @@ MAKE = make
 
 .PHONY: all test clean
 
-all: dealer
+all: dealer ncdealer
 dealer: $(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 

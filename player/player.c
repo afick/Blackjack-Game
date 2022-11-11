@@ -20,47 +20,91 @@
 
 /***** Global Variables ****/
 
-// This defines the dimensions of 
-#define max_player_points 21
-#define max_dealer_points 11
-#define number_actions 2
+// This defines the dimensions
+#define maxPlayerPoints 21
+#define maxDealerPoints 11
+#define numberActions 2
 
-float Q[max_player_points][max_dealer_points][number_actions] = {0};
-int Q_count[max_player_points][max_dealer_points][number_actions] = {0};
+// Q table declartion
+float Q[maxPlayerPoints][maxDealerPoints][numberActions] = {0};
+int Q_count[maxPlayerPoints][maxDealerPoints][numberActions] = {0};
 
-// loadQTables loads the q tables
+/********** Function Prototypes ***********/
+void loadQTables();
+void saveQTables();
+void rewardSaver(void* arg, void* item);
+void roundBagSaver(void* arg, void* item);
+void play(char* player_name, char* ip_address, int port);
+
+/**************** main() ****************/
+int main(int argc, char* argv[]) {
+	
+	// Ensure argument integrity
+	if (argc != 4) {
+		fprintf(stderr, "%s\n", "Not enough arguments. Usage: player <player name> <server’s IP address> <PORT number>");
+		return 1;
+	}
+
+	if (atoi(argv[3]) <= 0) {
+		fprintf(stderr, "%s\n", "PORT passed is invalid");
+		return 1;
+	}
+
+	// Extracting variables
+	char* player_name = argv[1];
+	char* ip_address = argv[2];
+	int port = atoi(argv[3]);
+
+	loadQTables();
+
+	play(player_name, ip_address, port);
+
+	saveQTables();
+}
+
+/**************** loadQTables() ****************/
+/* Loads the Q tables from file, if they exist
+ *
+ * We return:
+ *   Nothing if successful
+ *   
+ * We guarantee:
+ * 	 The Q tables will be loaded with values
+ */
+
 void loadQTables() {
-	FILE* qfile = fopen("data/qtable", "r");
-	FILE* qcountfile = fopen("data/qtablecount", "r");
+	FILE* qFile = fopen("data/qtable", "r");
+	FILE* qCountFile = fopen("data/qtablecount", "r");
 
+// Only needed for first iteration of training; skip the files
 #ifdef TRAIN
-	// If this is the first iteration, there might not be a table
-	if (!qfile) {
-		if (qcountfile) fclose(qcountfile);
+	if (!qFile) {
+		if (qCountFile) fclose(qCountFile);
 		return;	
 	}
 
-	if (!qcountfile) {
-		if (qfile) fclose(qfile);
+	if (!qCountFile) {
+		if (qFile) fclose(qFile);
 		return;
 	}
-	
 #else
+
 	// There has to be a set of q tables. Otherwise the algorithm won't work
-	mem_assert(qfile, "Error opening q table");
-	mem_assert(qcountfile, "Error opening q count table");
+	mem_assert(qFile, "Error opening q table");
+	mem_assert(qCountFile, "Error opening q count table");
 #endif
 	char* currline;
 
-	for (int i = 4; i < max_player_points; i++) {
-		for (int j = 2; j < max_dealer_points; j++) {
-			for (int k = 0; k < number_actions; k++) {
-				if ((currline = file_readLine(qfile))) {
+	// Load Q tables from disk
+	for (int i = 4; i < maxPlayerPoints; i++) {
+		for (int j = 2; j < maxDealerPoints; j++) {
+			for (int k = 0; k < numberActions; k++) {
+				if ((currline = file_readLine(qFile))) {
 					sscanf(currline, "%f", &Q[i][j][k]);
 					mem_free(currline);
 				}
 
-				if ((currline = file_readLine(qcountfile))) {
+				if ((currline = file_readLine(qCountFile))) {
 					sscanf(currline, "%d", &Q_count[i][j][k]);
 					mem_free(currline);
 				}
@@ -68,41 +112,68 @@ void loadQTables() {
 		}
 	}
 
-	fclose(qfile);
-	fclose(qcountfile);
+	// clean up
+	fclose(qFile);
+	fclose(qCountFile);
 }
 
-// saveQTables saves the tables to disk
+/**************** saveQTables() ****************/
+/* Saves the in-memory Q tables to disk
+ *
+  * We return:
+ *   Nothing if successful
+ *   
+ * We guarantee:
+ * 	 The Q tables will be loaded with values
+ */
 void saveQTables() {
-	FILE* qfile = fopen("data/qtable", "w");
-	FILE* qcountfile = fopen("data/qtablecount", "w");
+	FILE* qFile = fopen("data/qtable", "w");
+	FILE* qCountFile = fopen("data/qtablecount", "w");
 
-	mem_assert(qfile, "Error openin Q table in saving function");
-	mem_assert(qcountfile, "Error opening Q table in saving function");
+	mem_assert(qFile, "Error openin Q table in saving function");
+	mem_assert(qCountFile, "Error opening Q table in saving function");
 
-	for (int i = 4; i < max_player_points; i++) {
-		for (int j = 2; j < max_dealer_points; j++) {
-			for (int k = 0; k < number_actions; k++) {
-				fprintf(qfile, "%f\n", Q[i][j][k]);
-				fprintf(qcountfile, "%d\n", Q_count[i][j][k]);
+	// Save to disk in save order as read from disk
+	for (int i = 4; i < maxPlayerPoints; i++) {
+		for (int j = 2; j < maxDealerPoints; j++) {
+			for (int k = 0; k < numberActions; k++) {
+				fprintf(qFile, "%f\n", Q[i][j][k]);
+				fprintf(qCountFile, "%d\n", Q_count[i][j][k]);
 			}
 		}
 	}
 
-	fclose(qfile);
-	fclose(qcountfile);
+	fclose(qFile);
+	fclose(qCountFile);
 }
 
 
-// rewardSaver saves the reward to the bag
+/**************** rewardSaver() ****************/
+/* Saves the reward of the round to each state seen
+ *
+  * We return:
+ *   Nothing if successful
+ *   
+ * We guarantee:
+ * 	 the state is saved
+ */
 void rewardSaver(void* arg, void* item) {
 	int* reward = arg;
 	int* round = item;
 	round[3] = *reward;
 } 
 
-// roundbagSaver saves the round matrix to the table
-void roundbagSaver(void* arg, void* item) {
+/**************** roundBagSaver() ****************/
+/* stores the reward from each state 
+ * in the round to the Q table
+ *
+  * We return:
+ *   Nothing if successful
+ *   
+ * We guarantee:
+ * 	 the state is saved
+ */
+void roundBagSaver(void* arg, void* item) {
 	int* round = item;
 	int player_points = round[0];
 	int dealer_points = round[1];
@@ -115,31 +186,43 @@ void roundbagSaver(void* arg, void* item) {
 }
 
 
-// play method begins playing a game
+/**************** play() ****************/
+/* 
+ * Plays the game until the dealer quits
+ * 
+ * We return:
+ *   Nothing if successful
+ *   
+ * We guarantee:
+ * 	 the states are saved
+ */
 void play(char* player_name, char* ip_address, int port) {
 	// Begin networking set up	
 	int socket = connectToDealer(ip_address, port);
+	// failed to connect
 	if (socket <= 0) exit(99); 
 
-	// Joinning game
+	// Join the game
 	char joinmessage[30];
 	sprintf(joinmessage, "JOIN %s", player_name);
-	
+	// failed to send join 
 	if (sendMessage(socket, joinmessage) == -1) exit(99);	
 	
 	// Recieve Begin message
 	char* beginMessage = readMessage(socket);
+	// No message received, quit
 	if (beginMessage == NULL) {
-		// sleep(2);
-		if ((beginMessage = readMessage(socket)) == NULL) exit(99);
+		exit(99);
 	}
 
+	// Check for invalid begin message
 	if (strcmp(beginMessage, "BEGIN")) {
 		fprintf(stderr, "%s\n", "Unexpected Begin message");
 		mem_free(beginMessage);
 		exit(99);
 	}
 	
+	// While the dealer begins a game
 	while (!strcmp(beginMessage,"BEGIN")) {
 		mem_free(beginMessage);
 
@@ -147,57 +230,51 @@ void play(char* player_name, char* ip_address, int port) {
 		bag_t* roundbag = mem_assert(bag_new(), "Round bag not created in play function in TRAIN mode");
 
 		// Setting up hands
-		hand_t* phand = mem_assert(newHand(), "Unable to create hand in play function");
-		hand_t* dhand = mem_assert(newHand(), "Unable to create hand in play function");
+		hand_t* phand = mem_assert(newHand(), "Unable to create hand in play function"); // player hand
+		hand_t* dhand = mem_assert(newHand(), "Unable to create hand in play function"); // dealer hand
 	
 		// Getting player hand
-		char* cardm = readMessage(socket);
+		// read the card message
+		char* cardm; 
+		card_t* card;
+		for (int i = 0; i < 2; i++) {
+			// Read card message
+			cardm = readMessage(socket);
+			if (cardm == NULL) {
+				fprintf(stderr, "Bad card message: %s\n", cardm);
+				exit(99);
+			}	
+			// Create the card
+			card = newPlayerCard(cardm);
+			if (card == NULL) {
+				fprintf(stderr, "Couldn't create card\n");
+				exit(99);
+			}
+			addToHand(phand, card);
+			mem_free(cardm);
+		}
+	
+		// Read card message
+		cardm = readMessage(socket);
 		if (cardm == NULL) {
-			// sleep(2);
-			if ((cardm = readMessage(socket)) == NULL) exit(99);
+			fprintf(stderr, "Bad card message: %s\n", cardm);
+			exit(99);
 		}	
-		printf("cardm %s\n", cardm);
-		card_t* card = newPlayerCard(cardm);
-		if (card == NULL) {
-			continue;
-		}
-		// card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
-		addToHand(phand, card);
-		mem_free(cardm);
-	
-		cardm = readMessage(socket);
-		if (cardm == NULL) {
-			// sleep(2);
-			if ((cardm = readMessage(socket)) == NULL) exit(99);
-		}
-		printf("cardm %s\n", cardm);
+		// Create the card
 		card = newPlayerCard(cardm);
 		if (card == NULL) {
-			continue;
+			fprintf(stderr, "Couldn't create card\n");
+			exit(99);
 		}
-		// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
-		addToHand(phand, card);
-		mem_free(cardm);
-	
-		// Getting dealer hand
-		cardm = readMessage(socket);
-		if (cardm == NULL) {
-			// sleep(2);
-			if ((cardm = readMessage(socket)) == NULL) exit(99);
-		}
-		printf("cardm %s\n", cardm);
-		card = newPlayerCard(cardm);
-		if (card == NULL) {
-			continue;
-		}
-		// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(dhand, card);
 		mem_free(cardm);
-	
+
 		// Begin playing game
+		// Read decision message
 		char* decm = readMessage(socket);
 		if (decm == NULL) {
-			if ((decm = readMessage(socket)) == NULL) exit(99);
+			fprintf(stderr, "Couldn't read decision message\n");
+			exit(99);
 		}
 	
 		if (strcmp(decm, "DECISION")) {
@@ -205,19 +282,21 @@ void play(char* player_name, char* ip_address, int port) {
 			exit(99);
 		} 
 	
-		// mem_free(decm);
-	
+		// alloc memory for player's decision (hit or stand)
 		char* dec = mem_calloc_assert(6, sizeof(char), "Message for dec not created");
+		// create int to hold the player decision
 		int decnum = -1;
 	
-		do {
-			int ppoints = getHandScore(phand);
-			if (ppoints > 20) {
+		while (TRUE) {
+			int ppoints = getHandScore(phand); // player's hand score
+			// If they have more than 20, should always stand
+			if (ppoints > maxPlayerPoints - 1) {
 				strcpy(dec, "STAND");
 				decnum = 1;
 			} else {
 				// Deciding next move
-	#ifdef TRAIN
+#ifdef TRAIN
+				// If training, choose random action
 				if ((rand() % 2)) {
 					strcpy(dec, "HIT");
 					decnum = 0;
@@ -225,10 +304,12 @@ void play(char* player_name, char* ip_address, int port) {
 					strcpy(dec, "STAND");
 					decnum = 1;
 				}
-	#else
-				
+				printf("Ifdef worked\n");
+#else
+				// Get the dealer's score
 				int dpoints = getHandScore(dhand);
 
+				// Based on current state, choose decision from q table
 				float hit_chance = Q[ppoints-1][dpoints-1][0];
 				float stand_chance = Q[ppoints-1][dpoints-1][1];
 		
@@ -239,82 +320,85 @@ void play(char* player_name, char* ip_address, int port) {
 					strcpy(dec, "STAND");
 					decnum = 1;
 				}
-	#endif
+#endif
 			}
+			// Send the message; if it fails, quit
 			if (sendMessage(socket, dec) == -1) {
-				// sleep(2);
-				if (sendMessage(socket, dec) == -1) {
-					fprintf(stderr, "%s\n", "Sending message to dealer with move was not possible");
-					exit(99);
-				}
+				fprintf(stderr, "%s\n", "Sending message to dealer with move was not possible");
+				exit(99);
 			}
 
-			// Recording round
+			// Recording round state (points and decision)
 			int* round = mem_calloc_assert(5, sizeof(int), "Unable to create round recording in play function in TRAIN mode");
 
 			round[0] = getHandScore(phand);
 			round[1] = getHandScore(dhand);
-			// printf("dealer hand val: %d", getHandScore(dhand));
 			round[2] = decnum;
+			// Insert into bag of seen states
 			bag_insert(roundbag, round);
 	
+			// Check for Stand, break card receiving loop
 			if (!strcmp(dec, "STAND")) break;
 	
-			// Get card
+			// Get next card message
 			cardm = readMessage(socket);
 			if (cardm == NULL) {
-				// sleep(2);
-				if ((cardm = readMessage(socket)) == NULL) exit(99);
-			}
-			printf("cardm %s\n", cardm);
+				fprintf(stderr, "Bad card message: %s\n", cardm);
+				exit(99);
+			}	
+			// Create the card
 			card = newPlayerCard(cardm);
 			if (card == NULL) {
-				continue;
+				fprintf(stderr, "Couldn't create card\n");
+				exit(99);
 			}
-			// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);
 			
-			// Verify Decision Message
+			
 			mem_free(decm);
 			decm = readMessage(socket);
+			// Verify Decision Message
 			if (decm == NULL) {
-				// sleep(2);
-				if ((decm = readMessage(socket)) == NULL) exit(99);
+				exit(99);
 			}
-	
+
+			// If the player busted, break the card receiving loop
 			if (!strcmp(decm, "RESULT BUST")) {
 				mem_free(dec);
 				break;
 			} 
-
+			
+			// If didn't receive decision message, quit
 			if (strcmp(decm, "DECISION")) {
 				fprintf(stderr, "Unexpected decision message: %s\n", decm);
 				exit(99);
 			}
-			
-		} while (1);
+		} 
 		
+		// Read a result message from dealer
 		char* result;
 		if (!strcmp(decm, "RESULT BUST")) {
+			// If we already busted, we should expect that
 			result = decm;
 		}
-		else {
+		else { 
+			// read the message from the dealer
 			result = readMessage(socket);
 			mem_free(decm);
 			mem_free(dec);
 		}
-		// mem_free(dec);
-		// Getting match result
 		
-		
-		
+		// quit if no result message received
 		if (result == NULL) {
-			sleep(10);
-			if ((result = readMessage(socket)) == NULL) exit(99);
+			exit(99);
 		} 
-	
-		printf("Match Result: %s\n", result);
+		#ifdef TRAIN
+		printf("Training Match Result: %s\n", result);
+		#else
+		// Output the result of the game
+		printf("Playing Match Result: %s\n", result);
+		#endif
 	
 		// Saving reward integer
 		int reward;
@@ -330,31 +414,30 @@ void play(char* player_name, char* ip_address, int port) {
 			fprintf(stderr, "%s\n", "Unexpected reward obtained in play function");
 			exit(99);
 		}
-
-		mem_free(result);
 	
 		// Freeing memory
+		mem_free(result);
 		deleteHand(phand);
 		deleteHand(dhand);
 		
+		// Check for next round
 		beginMessage = readMessage(socket);	
 		if (beginMessage == NULL) {
-			// // sleep(2);
-			if ((beginMessage = readMessage(socket)) == NULL) exit(99);
+			exit(99);
 		}
 		
-
 		// Record Reward
 		bag_iterate(roundbag, &reward, rewardSaver);
 
 		// Record match
-		bag_iterate(roundbag, NULL, roundbagSaver);
+		bag_iterate(roundbag, NULL, roundBagSaver);
 
 		// Freeing round bag
 		bag_delete(roundbag, mem_free);
 
 	}
 
+	// If we got a message other than BEGIN and QUIT
 	if (strcmp(beginMessage, "QUIT")) {
 		fprintf(stderr, "Strange Message Received %s\n", beginMessage);
 		mem_free(beginMessage);
@@ -364,32 +447,7 @@ void play(char* player_name, char* ip_address, int port) {
 	}
 
 	mem_free(beginMessage);
-
 	// Beaking connection
 	closeClientConnection(socket);
 }	
 
-int main(int argc, char* argv[]) {
-	
-	//Ensure argument integrity
-	if (argc != 4) {
-		fprintf(stderr, "%s\n", "Not enough arguments. Usage: player <player name> <server’s IP address> <PORT number>");
-		return 1;
-	}
-
-	if (atoi(argv[3]) <= 0) {
-		fprintf(stderr, "%s\n", "PORT passed is invalid");
-		return 1;
-	}
-
-	//Extracting variables
-	char* player_name = argv[1];
-	char* ip_address = argv[2];
-	int port = atoi(argv[3]);
-
-	loadQTables();
-
-	play(player_name, ip_address, port);
-
-	saveQTables();
-}

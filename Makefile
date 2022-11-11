@@ -7,10 +7,10 @@ U = utils
 ############## default: make all libs and programs ##########
 all: 
 	make -C utils
+	make -C network
+	make -C cards
 	make -C player
 	make -C dealer
-	make -C cards
-	make -C network
 
 ############### TAGS for emacs users ##########
 TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh

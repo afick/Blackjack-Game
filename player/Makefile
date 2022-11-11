@@ -20,13 +20,13 @@ MAKE = make
 
 .PHONY: all test clean
 
-all: player
+all: player train
 
 player: $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -lncurses -o $@
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 train: $(OBJS) $(LIBS)
-	$(CC) $(TCFLAGS) $^ $(LIBS) -lncurses -o $@
+	$(CC) $(TCFLAGS) $^ $(LIBS) -o $@
 
 player.o: $U/bag.h $U/mem.h $U/file.h ../cards/cards.h ../network/network.h 
 
