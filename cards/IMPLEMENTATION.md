@@ -1,7 +1,7 @@
 # Blackjack Cards Module
 ## Implementation Specification
 
-In this document we reference the [Requirements Specification](../REQUIREMENTS.md) and [Design Specification](./DESIGN.md) and focus on the implementation-specific decisions.
+In this document we reference the [Requirements Specification](../REQUIREMENTS.md) and [Design Specification](../DESIGN.md) and focus on the implementation-specific decisions.
 Here we focus on the core subset of topics:
 
 -  Data structures/descripts
