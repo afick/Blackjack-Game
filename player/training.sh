@@ -10,10 +10,10 @@
 #
 # Alex Fick, CS50, Fall 2022
 
-make train
+make player # make sure train flag is uncommented
 
 for i in {1..10}
 do
-    ./train Alex 129.170.65.170 8092
+    ./player Alex 129.170.65.170 8092
 done
 

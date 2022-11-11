@@ -304,7 +304,6 @@ void play(char* player_name, char* ip_address, int port) {
 					strcpy(dec, "STAND");
 					decnum = 1;
 				}
-				printf("Ifdef worked\n");
 #else
 				// Get the dealer's score
 				int dpoints = getHandScore(dhand);

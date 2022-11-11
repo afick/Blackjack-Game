@@ -13,20 +13,16 @@ LIBS = $U/utils.a
 # uncomment to train the player
 TRAIN=-DTRAIN
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$U 
-TCFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TRAIN) -I$U  
 CC = gcc
 MAKE = make
 
 .PHONY: all test clean
 
-all: player train
+all: player 
 
 player: $(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
-
-train: $(OBJS) $(LIBS)
-	$(CC) $(TCFLAGS) $^ $(LIBS) -o $@
 
 player.o: $U/bag.h $U/mem.h $U/file.h ../cards/cards.h ../network/network.h 
 
@@ -34,6 +30,5 @@ clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
 	rm -f player
-	rm -f train
 	rm -f core
 	rm -f $(OBJS)
