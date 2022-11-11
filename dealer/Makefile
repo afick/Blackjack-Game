@@ -48,6 +48,7 @@ clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
 	rm -f dealer
+	rm -f ncdealer
 	rm -f data/*
 	rm -f core
 	rm -f $(OBJS)

@@ -20,17 +20,7 @@
 #include <netinet/in.h> // dealer
 
 /**************** local functions ****************/
-
-/**************** delay() ****************/
-/* See network.h for more information */
-void delay(int milli_seconds) {
-    // Storing start time
-    clock_t start_time = clock();
- 
-    // looping till required time is not achieved
-    while (clock() < start_time + milli_seconds)
-        ;
-}
+int nanosleep(const struct timespec *req, struct timespec *rem);
 
 /**************** global functions ****************/
 
@@ -144,8 +134,12 @@ int sendMessage(const int socket, char* message) {
         return -1;
     }
 
-    // delay for 250ms
-    delay(250);
+    // sleep for 25ms
+    if(nanosleep((const struct timespec[]){{0, 25000000L}}, NULL) < 0 )   
+    {
+        printf("nano sleep failed\n");
+        return -1;
+    }
 
     return 0;
 }
