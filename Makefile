@@ -12,7 +12,6 @@ all:
 	make -C cards
 	make -C network
 
-
 ############### TAGS for emacs users ##########
 TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
 	etags $^

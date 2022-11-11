@@ -22,6 +22,9 @@ MAKE = make
 
 all: dealer
 dealer: $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+
+ncdealer: ncdealer.o ../cards/cards.o ../network/network.o $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -lncurses -o $@
 
 dealertest_player:$(OBJS) $(LIBS)

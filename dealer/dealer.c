@@ -2,7 +2,7 @@
  *
  * dealer.c - Executes the dealer in the blackjack game
  *
- * usage: dealer
+ * usage: ./dealer <number of games> <port>
  * Jake Olson, Project Team 12, CS 50 Fall 2022
  *
  */
@@ -17,24 +17,25 @@
 #include "../network/network.h"
 #include <time.h>
 
-
-#define PORT 8092    // server port number 
-#define NUMGAMES 3   // number of games to be played
-
 // headers
 void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send);
 char* findResult(int playerHandScore, int dealerHandScore, int connected_socket);
-
+static void parseArgs(const int argc, char* argv[], int* games, int* port);
 
 int main(int argc, char* argv[]) {
+    // Validate command line args
+    int numGames = 0;
+    int port = 0;
+    parseArgs(argc, argv, &numGames, &port);
+
 	// Set up server socket for player
     int connected_socket;
     int listening_socket;
     bool bust;
-    srand(time(0)); // set the seed for deck creation
+    srand(time(0)); // set the seed for deck creation/shuffle
 
     // check if dealer is connected with player
-    if (setUpDealerSocket(PORT, &connected_socket, &listening_socket) == -1) {
+    if (setUpDealerSocket(port, &connected_socket, &listening_socket) == -1) {
         printf("Failed to set up server socket\n");
         exit(1);
     }
@@ -53,7 +54,7 @@ int main(int argc, char* argv[]) {
     joinMessage = NULL;
 
     // for each game:
-    for(int i = 0; i < NUMGAMES; i++) {
+    for(int i = 0; i < numGames; i++) {
         bust = false;
         // create new, shuffled deck
         deck_t* deck = newDeck();
@@ -150,6 +151,29 @@ int main(int argc, char* argv[]) {
     sendMessage(connected_socket, "QUIT");
     closeServerSocket(connected_socket, listening_socket);
     return 0;
+}
+
+/**************** parseArgs ****************/
+/* Validates command line arguments
+ *
+ * We return:
+ *   Nothing if successful
+ *   Exit w/ Non-Zero status if an error is found and error message to stderr
+ */
+static void parseArgs(const int argc, char* argv[], int* games, int* port) {
+	// Check input arguments: # of arguments
+	if (argc != 3) {
+		fprintf(stderr, "usage: ./dealer <number of games> <port>\n");
+		exit(1);
+	}
+    if(sscanf(argv[1], "%d", games) != 1) {
+        fprintf(stderr, "Incorrect usage. Number of games must be an integer.\n");
+        exit(1);
+    }
+    if(sscanf(argv[2], "%d", port) != 1) {
+        fprintf(stderr, "Incorrect usage. Port must be an integer.\n");
+        exit(1);
+    }
 }
 
 // helper function to get a card and perform the associated actions
