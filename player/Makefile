@@ -26,7 +26,7 @@ player: $(OBJS) $(LIBS)
 
 player.o: $U/bag.h $U/mem.h $U/file.h ../cards/cards.h ../network/network.h 
 
-test: 
+test:
 	bash -v testing.sh &> testing.out 
 
 clean:

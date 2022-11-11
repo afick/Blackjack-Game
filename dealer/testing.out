@@ -1,0 +1,208 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+# !/bin/bash
+#
+# testing.sh -- testing file for dealer
+#
+# usage: bash -v testing.sh &> testing.out 
+#
+# Team 12, CS50, Fall 2022
+
+# Make player output file
+rm -rf player.out ; touch player.out
+
+# Making everything
+cd .. ; make ; cd dealer
+make[1]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
+make -C utils
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+make[2]: 'utils.a' is up to date.
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/utils'
+make -C network
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+ar cr network.a network.o
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/network'
+make -C cards
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+ar cr cards.a cards.o ../utils/mem.o ../utils/bag.o 
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/cards'
+make -C player
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/player'
+make -C dealer
+make[2]: Entering directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12/dealer'
+make[1]: Leaving directory '/thayerfs/home/f005cqk/cs50/labs/project-team-12'
+
+# Testing with no arguments
+./dealer
+usage: ./dealer <number of games> <port>
+# Check error code
+echo $?
+1
+
+# Testing with one arguments
+./dealer Team12
+usage: ./dealer <number of games> <port>
+# Check error code
+echo $?
+1
+
+# Testing with too many arguments
+./dealer Team12 Ipaddress bad
+usage: ./dealer <number of games> <port>
+# Check error code
+echo $?
+1
+
+# Testing with bad port
+./dealer 1 port
+Incorrect usage. Port must be an integer.
+# Check error code
+echo $?
+4
+
+# Testing with bad port
+./dealer 1 0
+Incorrect usage. Port is invalid.
+# Check error code
+echo $?
+5
+
+# Testing with non-int number of games
+./dealer one 8092
+Incorrect usage. Number of games must be an integer.
+# Check error code
+echo $?
+2
+
+# Testing with 0 number of games
+./dealer 0 8092
+Incorrect usage. Number of games must be at least 1.
+# Check error code
+echo $?
+3
+
+# Testing with player
+./dealer 10 8092 &
+
+IPADDR=$(curl ifconfig.me)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    14  100    14    0     0    250      0 --:--:-- --:--:-- --:--:--   254
+
+cd ../player ; ./player Name $IPADDR 8092 > player.out 2>&1 & 
+
+# Check status code
+echo $?
+0
+
+Dealer is connected with player
+ Connected socket: 4
+ Listening socket: 3
+
+Name joined the game!
+
+dealer: sent BEGIN 1
+dealer: sent CARD Five of Hearts
+dealer: sent CARD Nine of Hearts
+dealer: sent DEALER Seven of Spades
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Five of Clubs
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT WIN
+---------------
+dealer: sent BEGIN 2
+dealer: sent CARD Five of Hearts
+dealer: sent CARD Ace of Diamonds
+dealer: sent DEALER Eight of Diamonds
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Five of Spades
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT WIN
+---------------
+dealer: sent BEGIN 3
+dealer: sent CARD Ten of Diamonds
+dealer: sent CARD Three of Clubs
+dealer: sent DEALER Six of Spades
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Queen of Hearts
+Name's result: RESULT BUST
+---------------
+dealer: sent BEGIN 4
+dealer: sent CARD Seven of Clubs
+dealer: sent CARD King of Spades
+dealer: sent DEALER Queen of Spades
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Ten of Spades
+Name's result: RESULT BUST
+---------------
+dealer: sent BEGIN 5
+dealer: sent CARD Five of Hearts
+dealer: sent CARD Six of Diamonds
+dealer: sent DEALER Five of Diamonds
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Queen of Clubs
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT WIN
+---------------
+dealer: sent BEGIN 6
+dealer: sent CARD Eight of Spades
+dealer: sent CARD Four of Hearts
+dealer: sent DEALER Seven of Diamonds
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT LOOSE
+---------------
+dealer: sent BEGIN 7
+dealer: sent CARD Ten of Diamonds
+dealer: sent CARD Ace of Diamonds
+dealer: sent DEALER King of Spades
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT WIN
+---------------
+dealer: sent BEGIN 8
+dealer: sent CARD Seven of Hearts
+dealer: sent CARD Queen of Clubs
+dealer: sent DEALER Ten of Spades
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT WIN
+---------------
+dealer: sent BEGIN 9
+dealer: sent CARD Six of Hearts
+dealer: sent CARD Queen of Diamonds
+dealer: sent DEALER Eight of Clubs
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Four of Spades
+dealer: sent DECISION
+dealer: received HIT from player
+dealer: sent CARD Eight of Hearts
+Name's result: RESULT BUST
+---------------
+dealer: sent BEGIN 10
+dealer: sent CARD Five of Diamonds
+dealer: sent CARD Ace of Spades
+dealer: sent DEALER Ace of Hearts
+dealer: sent DECISION
+dealer: received STAND from player
+Name's result: RESULT LOOSE
+---------------
