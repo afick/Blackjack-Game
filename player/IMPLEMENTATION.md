@@ -66,9 +66,9 @@ The only assumptions made are that the player name provided to the command line 
 
 * `Makefile` - compilation procedure
 * `player.c` - player executable source code
-* `training.sh` - bash command that begins trainning process
+* `training.sh` - bash command that begins training process
+* `testing.sh` - bash command that begins testing process
 
 ### Compilation
 
 To compile, simply run `make` on the command line.
-
