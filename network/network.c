@@ -19,7 +19,7 @@
 #include <unistd.h>     // read, write, close
 #include <netinet/in.h> // dealer
 
-/**************** local functions ****************/
+/**************** functions declaration ****************/
 int nanosleep(const struct timespec *req, struct timespec *rem);
 
 /**************** global functions ****************/

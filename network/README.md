@@ -65,7 +65,7 @@ Write message to the socket (from dealer or player).
 Pseudocode:
 
     write to the socket and safety check
-    call delay() to freeze for 250ms
+    call nanosleep() to freeze for 25ms
     return 0
 
 ### 5. closeServerSocket (for dealer)
@@ -85,16 +85,6 @@ Pseudocode:
 
     close player's connection
 
-### 7. delay
-
-Freeze the program for indicated milli seconds.
-
-Pseudocode:
-
-    get current time as start time
-    while current time < start time + wait time
-        do nothing
-
 ## Function prototypes
 
 ### network
@@ -106,7 +96,6 @@ char* readMessage(const int socket);
 int sendMessage(const int socket, char* message);
 void closeServerSocket(const int connectedSocket, const int listeningSocket);
 void closeClientConnection(const int socket);
-void delay(int milli_seconds);
 ```
 
 ## Testing
