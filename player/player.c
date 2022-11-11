@@ -130,7 +130,7 @@ void play(char* player_name, char* ip_address, int port) {
 	// Recieve Begin message
 	char* beginMessage = readMessage(socket);
 	if (beginMessage == NULL) {
-		sleep(2);
+		// sleep(2);
 		if ((beginMessage = readMessage(socket)) == NULL) exit(99);
 	}
 
@@ -153,38 +153,50 @@ void play(char* player_name, char* ip_address, int port) {
 		// Getting player hand
 		char* cardm = readMessage(socket);
 		if (cardm == NULL) {
-			sleep(2);
+			// sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}	
-		card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+		printf("cardm %s\n", cardm);
+		card_t* card = newPlayerCard(cardm);
+		if (card == NULL) {
+			continue;
+		}
+		// card_t* card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
 	
 		cardm = readMessage(socket);
 		if (cardm == NULL) {
-			sleep(2);
+			// sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-
-		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+		printf("cardm %s\n", cardm);
+		card = newPlayerCard(cardm);
+		if (card == NULL) {
+			continue;
+		}
+		// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(phand, card);
 		mem_free(cardm);
 	
 		// Getting dealer hand
 		cardm = readMessage(socket);
 		if (cardm == NULL) {
-			sleep(2);
+			// sleep(2);
 			if ((cardm = readMessage(socket)) == NULL) exit(99);
 		}
-
-		card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+		printf("cardm %s\n", cardm);
+		card = newPlayerCard(cardm);
+		if (card == NULL) {
+			continue;
+		}
+		// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 		addToHand(dhand, card);
 		mem_free(cardm);
 	
 		// Begin playing game
 		char* decm = readMessage(socket);
 		if (decm == NULL) {
-			sleep(2);
 			if ((decm = readMessage(socket)) == NULL) exit(99);
 		}
 	
@@ -230,7 +242,7 @@ void play(char* player_name, char* ip_address, int port) {
 	#endif
 			}
 			if (sendMessage(socket, dec) == -1) {
-				sleep(2);
+				// sleep(2);
 				if (sendMessage(socket, dec) == -1) {
 					fprintf(stderr, "%s\n", "Sending message to dealer with move was not possible");
 					exit(99);
@@ -251,11 +263,15 @@ void play(char* player_name, char* ip_address, int port) {
 			// Get card
 			cardm = readMessage(socket);
 			if (cardm == NULL) {
-				sleep(2);
+				// sleep(2);
 				if ((cardm = readMessage(socket)) == NULL) exit(99);
 			}
-
-			card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
+			printf("cardm %s\n", cardm);
+			card = newPlayerCard(cardm);
+			if (card == NULL) {
+				continue;
+			}
+			// card = mem_assert(newPlayerCard(cardm), "New card was not created in play function");
 			addToHand(phand, card);
 			mem_free(cardm);
 			
@@ -263,7 +279,7 @@ void play(char* player_name, char* ip_address, int port) {
 			mem_free(decm);
 			decm = readMessage(socket);
 			if (decm == NULL) {
-				sleep(2);
+				// sleep(2);
 				if ((decm = readMessage(socket)) == NULL) exit(99);
 			}
 	
@@ -323,7 +339,7 @@ void play(char* player_name, char* ip_address, int port) {
 		
 		beginMessage = readMessage(socket);	
 		if (beginMessage == NULL) {
-			sleep(2);
+			// // sleep(2);
 			if ((beginMessage = readMessage(socket)) == NULL) exit(99);
 		}
 		
@@ -340,8 +356,10 @@ void play(char* player_name, char* ip_address, int port) {
 	}
 
 	if (strcmp(beginMessage, "QUIT")) {
-		fprintf(stderr, "%s\n", "Strange Message Received");
+		fprintf(stderr, "Strange Message Received %s\n", beginMessage);
 		mem_free(beginMessage);
+		// Beaking connection
+		closeClientConnection(socket);
 		exit(0);
 	}
 

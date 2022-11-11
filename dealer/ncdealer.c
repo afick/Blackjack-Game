@@ -20,10 +20,10 @@
 
 
 #define PORT 8092    // server port number 
-#define NUMGAMES 3   // number of games to be played
+#define NUMGAMES 10   // number of games to be played
 
 // headers
-void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send);
+void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send, int* row);
 char* findResult(int playerHandScore, int dealerHandScore, int connected_socket);
 
 
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
     if (strncmp(joinMessage,"JOIN ", strlen("JOIN ")) == 0) {
         name = mem_malloc(sizeof(char)*(strlen(joinMessage)-4));
         sscanf(joinMessage, "JOIN %s", name);
-        mvprintw(10, 15, "%s, welcome to BlackJack! Press any key to continue.\n", name);
+        mvprintw(10, 40, "%s, welcome to BlackJack! Press any key to continue.\n", name);
         refresh();
         getch();
         clear();   
@@ -77,50 +77,49 @@ int main(int argc, char* argv[]) {
             printw("sending BEGIN failed\n");
             refresh();
         } else {
-            printw("BEGIN Game!\n");
+            mvprintw(0, 0, "Dealer's Hand\n");
+            mvprintw(0, 40, "Begin Game %d!\n", i+1);
+            mvprintw(0, 80, "%s's Hand\n", name);
             refresh();
         }
-
+        int row = 2; // keep track of which row you are on on the window
 
         // deal cards to the player, sending messages 
         // with card suit and rank as a string, like "Seven of Hearts"
         
         // create playerHand and add two cards
         hand_t* playerHand = newHand();
-        getNewCard(deck, playerHand, "CARD", connected_socket, true);
-        getNewCard(deck, playerHand, "CARD", connected_socket, true);
-
+        getNewCard(deck, playerHand, "CARD", connected_socket, true, &row);
+        getNewCard(deck, playerHand, "CARD", connected_socket, true, &row);
 
         // create dealer hand and add two cards
         hand_t* dealerHand = newHand();
-        getNewCard(deck, dealerHand, "DEALER", connected_socket, true);
-        getNewCard(deck, dealerHand, "DEALER", connected_socket, false);
+        getNewCard(deck, dealerHand, "DEALER", connected_socket, true, &row);
+        getNewCard(deck, dealerHand, "DEALER", connected_socket, false, &row);
 
     
         if (sendMessage(connected_socket, "DECISION") == -1) {
             printw("sending DECISION failed\n");
             refresh();
-        } else {
-            printw("dealer: sent DECISION\n");
-            refresh();
-        }
+        } 
         
 
         // Let the player decide to hit until they are content
         char* result = readMessage(connected_socket);
         if (result != NULL) {
             if (strncmp(result,"HIT", strlen("HIT")) == 0) {
-                printw("dealer: received HIT from player\n");  
+                mvprintw(row, 40, "%s HITS\n", name);  
                 refresh();
             } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
-                printw("dealer: received STAND from player\n");  
+                mvprintw(row, 40, "%s STANDS\n", name);  
                 refresh();
             } else {
-                printw("didn't receive HIT or STAND, received %s\n", result);
+                mvprintw(row, 40, "Didn't receive HIT or STAND, received %s\n", result);
                 refresh();
             }
+            row++;
             while(strncmp(result, "HIT", strlen("HIT")) == 0) {
-                getNewCard(deck, playerHand, "CARD", connected_socket, true);
+                getNewCard(deck, playerHand, "CARD", connected_socket, true, &row);
                 if(getHandScore(playerHand) > 21) {
                     bust = true;
                     break;
@@ -129,31 +128,29 @@ int main(int argc, char* argv[]) {
                 if (sendMessage(connected_socket, "DECISION") == -1) {
                     printw("sending DECISION failed\n");
                     refresh();
-                } else {
-                    printw("dealer: sent DECISION\n");
-                    refresh();
-                }
+                } 
 
                 free(result);
                 result = NULL;
                 result = readMessage(connected_socket);
                 if (strncmp(result,"HIT", strlen("HIT")) == 0) {
-                    printw("dealer: received HIT from player\n");  
+                    mvprintw(row, 40, "%s HITS\n", name);  
                     refresh();
                 } else if (strncmp(result,"STAND", strlen("STAND")) == 0) {
-                    printw("dealer: received STAND from player\n");  
+                    mvprintw(row, 40, "%s STANDS\n", name);  
                     refresh();
                 } else {
                     printw("didn't receive HIT or STAND, received %s\n", result);
                     refresh();
                 }
+                row += 1;
             }
             free(result);
         } else continue;
         
         // deal the dealer until the hand total is 
         while (!bust && getHandScore(dealerHand) < 17) {
-            getNewCard(deck, dealerHand, "DEALER", connected_socket, false);
+            getNewCard(deck, dealerHand, "DEALER", connected_socket, false, &row);
         }
 
 
@@ -163,9 +160,9 @@ int main(int argc, char* argv[]) {
             printw("sending %s failed\n", finalResult);
             refresh();
         } else {
-            printw("dealer: sent %s\n", finalResult);
-            refresh();
-            printw("%s's result: %s\n", name, finalResult);
+            mvprintw(row, 40, "%s's Score: %d, Dealer's Score: %d\n", name, getHandScore(playerHand), getHandScore(dealerHand));
+            row += 1;
+            mvprintw(row, 40, "%s's result: %s\n", name, finalResult);
             refresh();
         }
 
@@ -189,14 +186,19 @@ int main(int argc, char* argv[]) {
 }
 
 // helper function to get a card and perform the associated actions
-void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send) {
+void getNewCard(deck_t* deck, hand_t* hand, char* type, int connected_socket, bool send, int* row) {
         card_t* card = pullCard(deck);
         addToHand(hand, card);
         char* message = cardToString(type, card);
         if (send) {
             if (sendMessage(connected_socket, message) == -1) printw("Couldn't send %s\n", message);
-            printw("%s\n", message);
-        } else printw("(Facedown) %s\n", message);
+            if(strcmp(type, "DEALER") == 0) mvprintw(*row, 0, "%s\n", message);
+            else mvprintw(*row, 80, "%s\n", message);
+            *row += 1;
+        } else {
+            mvprintw(*row, 0, "%s (Facedown)\n", message);
+            *row += 1;
+        }
         refresh();
         mem_free(message);
 }
