@@ -9,9 +9,6 @@
 # Make dealer output file
 rm -rf dealer.out ; touch dealer.out
 
-# Making everything
-cd .. ; make clean ; make ; cd player
-
 # Testing with no arguments
 ./player
 
