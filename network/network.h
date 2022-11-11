@@ -16,20 +16,6 @@
 
 #include <stdio.h>
 
-/**************** local functions ****************/
-
-/**************** delay() ****************/
-/** delay for the input milli second
- * 
- * Caller provides:
- *      a int indicating milli seconds to freeze.
- * We do:
- *      freeze for the indicated milli seconds.
- * 
- * Credits to: https://www.geeksforgeeks.org/time-delay-c/
- */
-void delay(int milli_seconds);
-
 /**************** global functions ****************/
 
 /**************** connectToDealer() ****************/
