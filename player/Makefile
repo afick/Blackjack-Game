@@ -30,6 +30,9 @@ train: $(OBJS) $(LIBS)
 
 player.o: $U/bag.h $U/mem.h $U/file.h ../cards/cards.h ../network/network.h 
 
+test: 
+	bash -v testing.sh &> testing.out 
+
 clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
