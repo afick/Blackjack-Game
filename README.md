@@ -10,6 +10,9 @@ See the course web site for [detailed description of the project](https://www.cs
 Add here any assumptions you made while writing the solution, or any ways in which you know your implementation fails to work.
 
 ### Notes
+#### Training
+In our training, we were primarily limited by time. We also understood that the value of a specific index in the Q table wouldn't matter in playing beyond being greater or less than the opposite action for the same state. We saw that even just after 5,000 tests, the two states would not flip in terms of average reward. Since we had the ability to, however, we decided to run an approximately 1,000,000 extra games overnight. We hope this would eliminate any fluctuations between preference of one action over the other.
+
 #### NCurses
 
 We did implement a version of the game in ncurses. It nicely lays out the process of the execution of the dealer: it opens with a welcome message, then the user can press any key to continue, which will bring the user to the first game, and then the user can press any key to continue through the games, until the number of games declared have been played. 

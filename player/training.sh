@@ -2,7 +2,7 @@
 #
 # training.sh -- training file for player
 #
-# usage: testing.sh 
+# usage: training.sh 
 # run this after running training.sh in dealer directory in separate terminal
 #
 # input: 
@@ -12,7 +12,7 @@
 
 make player # make sure train flag is uncommented
 
-for i in {1..10}
+for i in {1..10000}
 do
     ./player Alex 129.170.65.170 8092
 done
