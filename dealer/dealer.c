@@ -178,11 +178,19 @@ static void parseArgs(const int argc, char* argv[], int* games, int* port) {
 	}
     if(sscanf(argv[1], "%d", games) != 1) {
         fprintf(stderr, "Incorrect usage. Number of games must be an integer.\n");
-        exit(1);
+        exit(2);
+    }
+    if (*games < 1) {
+        fprintf(stderr, "Incorrect usage. Number of games must be at least 1.\n");
+        exit(3);
     }
     if(sscanf(argv[2], "%d", port) != 1) {
         fprintf(stderr, "Incorrect usage. Port must be an integer.\n");
-        exit(1);
+        exit(4);
+    }
+    if (*port < 1) {
+        fprintf(stderr, "Incorrect usage. Port is invalid.\n");
+        exit(5);
     }
 }
 

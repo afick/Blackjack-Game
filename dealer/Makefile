@@ -30,7 +30,9 @@ ncdealer: ncdealer.o ../cards/cards.o ../network/network.o $(LIBS)
 dealertest_player:$(OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-
+test: 
+	bash -v testing.sh &> testing.out 
+	
 # test dealer with test_dealer and test_player
 # run 'make test_dealer' first, then run 'make test_player'
 #test_dealer: dealer

@@ -1,17 +1,59 @@
 # !/bin/bash
 #
-# training.sh -- training file for player using pre-compiled dealer
+# testing.sh -- testing file for dealer
 #
-# usage: bash -v training.sh 
-# run this before running training.sh in player directory in separate terminal
+# usage: bash -v testing.sh &> testing.out 
 #
-# input: 
-# output: test runs and results
-#
-# Alex Fick, CS50, Fall 2022
+# Team 12, CS50, Fall 2022
 
-for i in {1..3}
-do
-    ./dealer
-done
+# Make player output file
+rm -rf player.out ; touch player.out
+
+# Making everything
+cd .. ; make ; cd dealer
+
+# Testing with no arguments
+./dealer
+# Check error code
+echo $?
+
+# Testing with one arguments
+./dealer Team12
+# Check error code
+echo $?
+
+# Testing with too many arguments
+./dealer Team12 Ipaddress bad
+# Check error code
+echo $?
+
+# Testing with bad port
+./dealer 1 port
+# Check error code
+echo $?
+
+# Testing with bad port
+./dealer 1 0
+# Check error code
+echo $?
+
+# Testing with non-int number of games
+./dealer one 8092
+# Check error code
+echo $?
+
+# Testing with 0 number of games
+./dealer 0 8092
+# Check error code
+echo $?
+
+# Testing with player
+./dealer 10 8092 &
+
+IPADDR=$(curl ifconfig.me)
+
+cd ../player ; ./player Name $IPADDR 8092 > player.out 2>&1 & 
+
+# Check status code
+echo $?
 
