@@ -1,13 +1,26 @@
 # CS50 Final Project
-## Team 12
 
-The assignment is in a [public repo](https://github.com/cs50-2022-fall/project).
-Do not clone that repo; view it on GitHub.  One person from your team should accept the assignment from GitHub classroom.
-Watch if there for any commits that may represent updates to the assignment or specs.
+This was the final project for CS50, Software Design and Implementation. We were tasked with implemented both the dealer and player of a blackjack game, which could communicate remotely through TCP/IP messages. It also incorporates a reinforcement learning approach to training the player to play automatically, so there is no user input involved in this game. See [Design.MD](DESIGN.md) and [Implementation.MD](IMPLEMENTATION.md) for detailed descriptions of each of the four modules. I completed the cards module fully by myself, and also the majority of the dealer, and well as a large portion of the player, and all of the ncdealer implementation for the NCurses interface.
 
 See the course web site for [detailed description of the project](https://www.cs.dartmouth.edu/~tjp/cs50/project/index.html)
 
-Add here any assumptions you made while writing the solution, or any ways in which you know your implementation fails to work.
+### Compilation
+
+To compile, simply call `make`.
+
+### Usage
+
+First, run the dealer with:
+```
+dealer/ncdealer <number of games> <port>` 
+```
+
+Then, run the player with the following command:
+
+```
+player/player <player_name> <ip_address> <port_number>
+```
+
 
 ### Notes
 #### Training (# of Games)
